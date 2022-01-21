@@ -1,24 +1,22 @@
 /**
  * Sidebar containing complete feed, discovery screen and directories for feed sources.
- *
- * Currently, visibility state and selection action is controlled by props, maybe Redux will be useful here.
  */
 
 import Box from '@mui/material/Box';
-import Drawer from "@mui/material/Drawer"
+import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
-import Typography from "@mui/material/Typography";
+import Typography from '@mui/material/Typography';
 import { SvgIconProps } from '@mui/material/SvgIcon';
 import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
-import TreeView from "@mui/lab/TreeView";
+import TreeView from '@mui/lab/TreeView';
 import { styled } from '@mui/material/styles';
 
 // Icons
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Label from '@mui/icons-material/Label';
-import Newspaper from "@mui/icons-material/Newspaper";
-import Discover from "@mui/icons-material/Explore";
+import Newspaper from '@mui/icons-material/Newspaper';
+import Discover from '@mui/icons-material/Explore';
 
 declare module 'react' {
 	interface CSSProperties {
@@ -135,7 +133,7 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 					defaultEndIcon={<div style={{ width: 24 }} />}
 					sx={{ flexGrow: 1, maxWidth: width, overflowY: 'auto', userSelect: 'none' }}
 					onNodeSelect={(event: React.SyntheticEvent, nodeIds: string) => {
-						if (!nodeIds.startsWith("directory-")) { onNodeSelect(nodeIds) }
+						if (!nodeIds.startsWith('directory-')) { onNodeSelect(nodeIds) }
 					}}
 				>
 					<StyledTreeItem nodeId="feed" labelText="Feed" labelIcon={Newspaper} />
@@ -148,4 +146,4 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 	)
 }
 
-export default Sidebar;
+export default Sidebar

@@ -1,8 +1,5 @@
 /**
  * Top screen bar with actions
- *
- * Appbar props define function for closing and opening sidebar, I think Redux will do good job here
- * as Home component does not need to know about sidebar state.
  */
 
 import AppBar from '@mui/material/AppBar';
@@ -10,12 +7,12 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Tooltip from "@mui/material/Tooltip"
+import Tooltip from '@mui/material/Tooltip';
 
 // Icons
-import MenuIcon from "@mui/icons-material/Menu"
-import CloudSyncIcon from "@mui/icons-material/CloudSync"
-import AddIcon from "@mui/icons-material/Add"
+import MenuIcon from '@mui/icons-material/Menu';
+import CloudSyncIcon from '@mui/icons-material/CloudSync';
+import AddIcon from '@mui/icons-material/Add';
 
 interface AppbarProps {
 	setSidebarOpen: () => void
@@ -66,4 +63,4 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 	)
 }
 
-export default Appbar;
+export default Appbar

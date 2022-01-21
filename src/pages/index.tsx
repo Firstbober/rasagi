@@ -11,11 +11,11 @@ import React from 'react'
 import Toolbar from '@mui/material/Toolbar';
 
 // App components
-import Sidebar from "../components/sidebar";
-import Appbar from "../components/appbar";
+import Sidebar from '../components/sidebar';
+import Appbar from '../components/appbar';
 
 const Home: NextPage = () => {
-  const [isOpen, setOpen] = React.useState(true);
+  const [isSidebarOpen, setSidebarOpen] = React.useState(true);
 
   return (
     <Box sx={{ display: 'flex' }}>
@@ -27,8 +27,8 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <Appbar setSidebarOpen={() => setOpen(!isOpen)} />
-      <Sidebar isOpen={isOpen} onNodeSelect={(node) => alert(node)} />
+      <Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
+      <Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(node)} />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
