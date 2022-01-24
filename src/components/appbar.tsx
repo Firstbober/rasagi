@@ -7,7 +7,6 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
 
 // Icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -37,26 +36,22 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 					Rasagi
 				</Typography>
 
-				<Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-					<Tooltip title="Add source">
-						<IconButton
-							size="large"
-							aria-label="Add source to the feed"
-							color="inherit"
-						>
-							<AddIcon />
-						</IconButton>
-					</Tooltip>
+				<Box sx={{ display: { md: 'flex' } }}>
+					<IconButton
+						aria-label="Add source to the feed"
+						color="inherit"
+						title="Add source"
+					>
+						<AddIcon />
+					</IconButton>
 
-					<Tooltip title="Synchronization">
-						<IconButton
-							size="large"
-							color="inherit"
-							aria-label="Synchronization settings"
-						>
-							<CloudSyncIcon />
-						</IconButton>
-					</Tooltip>
+					<IconButton
+						color="inherit"
+						aria-label="Synchronization settings"
+						title="Synchronization"
+					>
+						<CloudSyncIcon />
+					</IconButton>
 				</Box>
 			</Toolbar>
 		</AppBar>

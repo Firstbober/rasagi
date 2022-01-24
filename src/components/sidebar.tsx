@@ -10,6 +10,7 @@ import { SvgIconProps } from '@mui/material/SvgIcon';
 import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
 import TreeView from '@mui/lab/TreeView';
 import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 // Icons
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -106,10 +107,11 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 	const width = 260;
+	const matches = useMediaQuery('(max-width: 800px)');
 
 	return (
 		<Drawer
-			variant="persistent"
+			variant={matches ? "temporary" : "persistent"}
 			sx={{
 				width: width,
 				flexShrink: 0,
@@ -120,7 +122,7 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 					borderRight: 'none'
 				},
 			}}
-			open={isOpen}
+			open={matches ? !isOpen : isOpen}
 		>
 			<Toolbar />
 			<Box sx={{ overflow: 'auto' }}>
