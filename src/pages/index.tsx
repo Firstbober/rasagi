@@ -29,7 +29,7 @@ const Home: NextPage = () => {
       </Head>
 
       <Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
-      <Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(node)} />
+      <Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(`Not implemented (${node})`)} />
 
       <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
         <Toolbar />
