@@ -15,6 +15,7 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import AddIcon from '@mui/icons-material/Add';
 import DarkMode from '@mui/icons-material/DarkMode';
 import LightMode from '@mui/icons-material/LightMode';
+import FolderIcon from '@mui/icons-material/Folder';
 
 import AddSourceModal from './addsource';
 
@@ -53,6 +54,9 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 		setAddSourceModalOpen(true);
 		// alert("Not implemented");
 	}
+	const fnManageFolders = () => {
+		alert("Not implemented");
+	}
 	const fnSyncSettings = () => {
 		alert("Not implemented");
 	}
@@ -89,6 +93,19 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 					>
 						<AddIcon />
 					</IconButton>
+
+					{
+						/*
+							<IconButton
+								aria-label="Manage folders"
+								color="inherit"
+								title="Manage folders"
+								onClick={fnManageFolders}
+							>
+								<FolderIcon />
+							</IconButton>
+						*/
+					}
 
 					<DarkModeSwitch />
 

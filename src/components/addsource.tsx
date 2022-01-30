@@ -69,7 +69,7 @@ const steps = [
 								<MenuItem key="directory-all" value="directory-all">
 									All
 								</MenuItem>
-								{ alert('Not implemented! (directory listing)') }
+								{ /* TODO: Directory listing */ }
 							</TextField>
 						</Box>
 					</Box>
