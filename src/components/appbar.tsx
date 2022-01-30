@@ -7,6 +7,7 @@ import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
+import React from 'react';
 
 // Icons
 import MenuIcon from '@mui/icons-material/Menu';
@@ -14,7 +15,8 @@ import CloudSyncIcon from '@mui/icons-material/CloudSync';
 import AddIcon from '@mui/icons-material/Add';
 import DarkMode from '@mui/icons-material/DarkMode';
 import LightMode from '@mui/icons-material/LightMode';
-import React from 'react';
+
+import AddSourceModal from './addsource';
 
 const DarkModeSwitch = () => {
 	const [isDarkMode, setDarkMode] = React.useState(false);
@@ -45,8 +47,11 @@ interface AppbarProps {
 };
 
 const Appbar = ({ setSidebarOpen }: AppbarProps) => {
+	const [isAddSourceModalOpen, setAddSourceModalOpen] = React.useState(false);
+
 	const fnAddSource = () => {
-		alert("Not implemented");
+		setAddSourceModalOpen(true);
+		// alert("Not implemented");
 	}
 	const fnSyncSettings = () => {
 		alert("Not implemented");
@@ -54,6 +59,11 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 
 	return (
 		<AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+			<AddSourceModal
+				isOpen={isAddSourceModalOpen}
+				onClose={() => { setAddSourceModalOpen(false) }}
+			/>
+
 			<Toolbar>
 				<IconButton
 					size="large"
