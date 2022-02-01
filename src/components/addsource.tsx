@@ -7,10 +7,11 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import StepContent from '@mui/material/StepContent';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import React from 'react';
 
 // Icons
 import Close from '@mui/icons-material/Close';
-import React from 'react';
 
 interface AddSourceModalProps {
 	isOpen: boolean,
@@ -22,7 +23,6 @@ const style = {
 	top: '50%',
 	left: '50%',
 	transform: 'translate(-50%, -50%)',
-	width: 400,
 	bgcolor: 'background.paper',
 	borderRadius: 1,
 	boxShadow: 4,
@@ -90,13 +90,14 @@ const steps = [
 
 const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 	const [activeStep, setActiveStep] = React.useState(0);
+	const matches = useMediaQuery('(max-width: 420px)');
 
 	return (
 		<Modal
 			open={isOpen}
 			onClose={onClose}
 		>
-			<Box sx={style}>
+			<Box sx={{...style, width: matches ? 360 : 420}}>
 				<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
 					<Typography variant="h6">Add source</Typography>
 					<IconButton

@@ -18,6 +18,7 @@ import LightMode from '@mui/icons-material/LightMode';
 import FolderIcon from '@mui/icons-material/Folder';
 
 import AddSourceModal from './addsource';
+import SyncSettingsModal from './syncsettings';
 
 const DarkModeSwitch = () => {
 	const [isDarkMode, setDarkMode] = React.useState(false);
@@ -49,6 +50,7 @@ interface AppbarProps {
 
 const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 	const [isAddSourceModalOpen, setAddSourceModalOpen] = React.useState(false);
+	const [isSyncSettingsModalOpen, setSyncSettingsModalOpen] = React.useState(false);
 
 	const fnAddSource = () => {
 		setAddSourceModalOpen(true);
@@ -58,7 +60,7 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 		alert("Not implemented");
 	}
 	const fnSyncSettings = () => {
-		alert("Not implemented");
+		setSyncSettingsModalOpen(true);
 	}
 
 	return (
@@ -66,6 +68,11 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 			<AddSourceModal
 				isOpen={isAddSourceModalOpen}
 				onClose={() => { setAddSourceModalOpen(false) }}
+			/>
+
+			<SyncSettingsModal
+				isOpen={isSyncSettingsModalOpen}
+				onClose={() => { setSyncSettingsModalOpen(false) }}
 			/>
 
 			<Toolbar>
