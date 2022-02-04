@@ -12,7 +12,7 @@ import axios from 'axios';
 
 // Create interface for typed response construction
 interface Response {
-	type: 'success' | 'error',
+	type: 'success' | 'error' | 'info',
 	value: {
 		sourceName: string
 	} | string
@@ -24,7 +24,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
 		value: 'Invalid server request'
 	};
 
-	console.log(req.query);
+	if (req.query.sourceURL == undefined)
+		res.status(400).json(response);
 
-	res.status(400).json(response);
+	response.type = 'success';
+	response.value = 'Processing...';
+
+	res.status(200).json(response);
 }

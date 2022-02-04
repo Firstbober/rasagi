@@ -7,7 +7,8 @@ const endpoints = {
 	}
 }
 
-// Fetcher for SWR hook.
-const fetcher = (url: string, params: any) => axios.get(url, { params: params }).then(res => res.data)
+// Fetcher for SWR hook and other stuff.
+const fetcher = (url: string, params: any) => axios.get(url, { params: params }).then(res => res.data);
+
 
 export { endpoints, fetcher };

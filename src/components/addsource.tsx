@@ -23,7 +23,6 @@ import StepContent from '@mui/material/StepContent';
 // React and the hooks
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
-import useSWR from 'swr';
 
 // Icons
 import Close from '@mui/icons-material/Close';
@@ -59,33 +58,12 @@ const steps = [
 	{
 		label: 'Enter link to the source',
 		component: ({ handleNext }: { handleNext: () => void }) => {
-			// Request data set after 600ms registering input in TextField.
-			const [rerequestData, setRerequestData] = React.useState(false as any);
 			// Data for Alert element.
 			const [alertData, setAlertData] = React.useState(['info', 'Waiting for the link...']);
 			// Current 'Next' button state.
 			const [canMakeNextStep, setCanMakeNextStep] = React.useState(false);
 
-			const { data, error } = useSWR(rerequestData ? [endpoints.source.info, rerequestData] : null, fetcher);
-
 			let editTimeout: NodeJS.Timeout;
-
-			// We need useEffect, so data from useSWR can be processed.
-			React.useEffect(() => {
-				// This condition is necessary so we don't go into infinite
-				// rerender loop.
-				if (rerequestData != false) {
-					if (error || data == undefined) {
-						setAlertData(['error', 'Request failed with error!']);
-					} else {
-						if (data.type == 'success') {
-							setAlertData(['success', 'Successfully fetched source info!']);
-						} else {
-							setAlertData(['error', data.value]);
-						}
-					}
-				}
-			});
 
 			return (
 				<Box sx={{ paddingTop: 0, width: '100%' }}>
@@ -97,19 +75,31 @@ const steps = [
 						onInput={(event) => {
 							clearTimeout(editTimeout);
 
-							editTimeout = setTimeout(() => {
+							editTimeout = setTimeout(async () => {
 								let value = (event.target as HTMLInputElement).value;
 
 								if (value.length == 0) {
 									setAlertData(['info', 'Waiting for the link...']);
+									setCanMakeNextStep(false);
 									return;
 								}
 
-								setRerequestData({
-									sourceURL: (event.target as HTMLInputElement).value
-								});
-								// Infinite rerender loop mitigation.
-								setRerequestData(false);
+								try {
+									let response = await fetcher(endpoints.source.info, {
+										sourceURL: (event.target as HTMLInputElement).value
+									});
+
+									if (response.type == 'success') {
+										setAlertData(['success', 'Successfully fetched source info!']);
+										setCanMakeNextStep(true);
+									} else {
+										setAlertData([response.type, response.value]);
+										setCanMakeNextStep(false);
+									}
+								} catch (error) {
+									setAlertData(['error', 'Request failed with error!']);
+									setCanMakeNextStep(false);
+								}
 							}, 600)
 						}}
 					/>
