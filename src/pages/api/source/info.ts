@@ -10,13 +10,16 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { feedparse } from "../../../app/backend/feedparse";
+import { feedparse, FeedMedia } from "../../../app/backend/feedparse";
 
 // Create interface for typed response construction.
 interface Response {
 	type: 'success' | 'error' | 'info',
 	value: {
-		sourceName: string
+		title: string,
+		link: string,
+		description: string,
+		image?: FeedMedia
 	} | string
 }
 
@@ -132,9 +135,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 		}
 
-		console.log(feedparse(feedData, {
+		const parseResult = feedparse(feedData, {
 			metadataOnly: true
-		}));
+		});
+
+		if(!parseResult.valid) {
+			response.value = "Feed from URL cannot be read.";
+			res.status(200).json(response);
+			return;
+		}
+
+		response.value = {
+			title: parseResult.content?.metadata.title!,
+			link: parseResult.content?.metadata.link!,
+			description: parseResult.content?.metadata.description!,
+			image: parseResult.content?.metadata.image,
+		};
 	} catch (error) {
 		// Send error response
 		response.value = "Provided URL is invalid!";

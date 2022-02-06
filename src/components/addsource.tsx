@@ -90,6 +90,8 @@ const steps = [
 									});
 
 									if (response.type == 'success') {
+										console.log(response.value);
+
 										setAlertData(['success', 'Successfully fetched source info!']);
 										setCanMakeNextStep(true);
 									} else {

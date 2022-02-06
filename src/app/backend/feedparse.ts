@@ -13,7 +13,7 @@ interface FeedItem {
 	media?: FeedMedia
 }
 
-interface FeedMedia {
+export interface FeedMedia {
 	mime: string,
 	url: string
 }
