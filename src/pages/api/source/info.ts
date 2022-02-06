@@ -9,8 +9,8 @@
 
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
-// import { XMLValidator } from "fast-xml-parser";
 import { parse } from 'node-html-parser';
+import { feedparse } from "../../../app/backend/feedparse";
 
 // Create interface for typed response construction.
 interface Response {
@@ -132,7 +132,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 		}
 
-		// TODO: Do feed parsing here.
+		feedparse(feedData);
 	} catch (error) {
 		// Send error response
 		response.value = "Provided URL is invalid!";
