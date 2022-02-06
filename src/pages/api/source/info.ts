@@ -132,7 +132,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 		}
 
-		feedparse(feedData);
+		console.log(feedparse(feedData, {
+			metadataOnly: true
+		}));
 	} catch (error) {
 		// Send error response
 		response.value = "Provided URL is invalid!";
