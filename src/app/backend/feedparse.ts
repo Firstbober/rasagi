@@ -141,7 +141,10 @@ export function feedparse(feed: string, options?: ParserOptions): Feed {
 	let parseRet = xmlRoot.rss != undefined
 		? parseRSS(xmlRoot.rss, parserOptions)
 		// Temporarily parse RSS here, so vscode is silent.
-		// TODO: Atom parsing here.
+		//
+		// After some thought, I will not make Atom parser
+		// as right now there is virtually none feeds I could find.
+		// Pull requests are welcomed.
 		: parseRSS(xmlRoot.rss, parserOptions);
 
 	// Parsing function can return FeedContent or false,
