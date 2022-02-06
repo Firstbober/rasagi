@@ -49,21 +49,35 @@ import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
 import MenuItem from '@mui/material/MenuItem';
 import { endpoints, fetcher } from '../app/api';
+import { FeedMetadata } from '../app/backend/feedparse';
+
+interface StepArgs {
+	sourceInfo: {
+		set: (info: FeedMetadata) => void,
+		info: FeedMetadata
+	},
+	handleBack: () => void,
+	handleNext: () => void
+}
 
 const steps = [
 	// First step
 	//
 	// We request user here to enter desired source link
-	// so Redux state can be set and further steps completed.
+	// so further steps can completed.
 	{
 		label: 'Enter link to the source',
-		component: ({ handleNext }: { handleNext: () => void }) => {
+		component: ({ handleNext, sourceInfo }: StepArgs) => {
 			// Data for Alert element.
 			const [alertData, setAlertData] = React.useState(['info', 'Waiting for the link...']);
+			// State for current URL in TextField, so
+			// it will stay between steps.
+			const [currentURL, setCurrentURL] = React.useState('');
 			// Current 'Next' button state.
 			const [canMakeNextStep, setCanMakeNextStep] = React.useState(false);
 
-			let editTimeout: NodeJS.Timeout;
+			// Edit timeout id state.
+			const [editTimeout, setEditTimeout] = React.useState({} as NodeJS.Timeout);
 
 			return (
 				<Box sx={{ paddingTop: 0, width: '100%' }}>
@@ -72,12 +86,16 @@ const steps = [
 						label="Link to the source"
 						variant="outlined"
 						sx={{ width: '100%', marginBottom: 1 }}
-						onInput={(event) => {
+						value={currentURL}
+						onChange={(event) => {
+							let value = event.target.value;
+
+							setAlertData(['info', 'Analyzing the link...']);
+
 							clearTimeout(editTimeout);
+							setCurrentURL(value);
 
-							editTimeout = setTimeout(async () => {
-								let value = (event.target as HTMLInputElement).value;
-
+							setEditTimeout(setTimeout(async () => {
 								if (value.length == 0) {
 									setAlertData(['info', 'Waiting for the link...']);
 									setCanMakeNextStep(false);
@@ -86,14 +104,16 @@ const steps = [
 
 								try {
 									let response = await fetcher(endpoints.source.info, {
-										sourceURL: (event.target as HTMLInputElement).value
+										sourceURL: value
 									});
 
 									if (response.type == 'success') {
-										console.log(response.value);
+										sourceInfo.set(response.value as FeedMetadata);
 
 										setAlertData(['success', 'Successfully fetched source info!']);
 										setCanMakeNextStep(true);
+
+										setCurrentURL(value);
 									} else {
 										setAlertData([response.type, response.value]);
 										setCanMakeNextStep(false);
@@ -102,7 +122,7 @@ const steps = [
 									setAlertData(['error', 'Request failed with error!']);
 									setCanMakeNextStep(false);
 								}
-							}, 600)
+							}, 600));
 						}}
 					/>
 					<Alert severity={alertData[0] as AlertColor}>
@@ -129,13 +149,23 @@ const steps = [
 	// synchronized devices.
 	{
 		label: 'Configure source',
-		component: ({ handleBack, handleNext }: { handleBack: () => void, handleNext: () => void }) => {
+		component: ({ handleBack, handleNext, sourceInfo }: StepArgs) => {
 			return (
 				<Box sx={{ paddingTop: 0, width: '100%' }}>
 					<Box sx={{ display: 'flex' }}>
-						<Skeleton variant="rectangular" width={90} height={90} sx={{ marginRight: 1, flexShrink: '0' }} />
+						{
+							sourceInfo.info.image
+								? <img
+									src={sourceInfo.info.image?.url}
+									alt={sourceInfo.info.title}
+									style={{ marginRight: 1, flexShrink: '0', objectFit: 'contain' }}
+									width={90} height={90}
+								/>
+								: <Skeleton variant="rectangular" width={90} height={90} sx={{ marginRight: 1, flexShrink: '0' }} />
+
+						}
 						<Box>
-							<TextField id="source-name" label="Source name" variant="outlined" sx={{ width: '100%', marginBottom: 1 }} disabled />
+							<TextField id="source-name" label="Source name" value={sourceInfo.info.title} variant="outlined" sx={{ width: '100%', marginBottom: 1 }} disabled />
 							<TextField id="source-directory" label="Source directory" variant="outlined" sx={{ width: '100%', marginBottom: 1 }} value="directory-all" select>
 								<MenuItem key="directory-all" value="directory-all">
 									All
@@ -161,6 +191,7 @@ const steps = [
 
 const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 	const [activeStep, setActiveStep] = React.useState(0);
+	const [sourceInfo, setSourceInfo] = React.useState({} as FeedMetadata);
 	const matches = useMediaQuery('(max-width: 420px)');
 
 	return (
@@ -191,6 +222,12 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 											handleBack: () => { },
 											handleNext: () => {
 												setActiveStep(activeStep + 1);
+											},
+											sourceInfo: {
+												set: (info: FeedMetadata) => {
+													setSourceInfo(info);
+												},
+												info: sourceInfo
 											}
 										})}</StepContent>
 									</Step>
@@ -205,6 +242,10 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 											},
 											handleNext: () => {
 												alert('Not implemented! (finish)');
+											},
+											sourceInfo: {
+												set: () => { },
+												info: sourceInfo
 											}
 										})}</StepContent>
 									</Step>

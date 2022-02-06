@@ -18,14 +18,15 @@ export interface FeedMedia {
 	url: string
 }
 
-interface FeedContent {
-	metadata: {
-		title: string,
-		link: string,
-		description: string,
-		image?: FeedMedia
-	},
+export interface FeedMetadata {
+	title: string,
+	link: string,
+	description: string,
+	image?: FeedMedia
+}
 
+interface FeedContent {
+	metadata: FeedMetadata,
 	items: Array<FeedItem>
 }
 
