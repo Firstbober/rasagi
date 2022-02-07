@@ -9,9 +9,55 @@ datasource db {
 
 // Base synchronization model
 model Synchronization {
-  id Int @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   syncID String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  Directory Directory[]
+}
+
+// Directory defines a directory with some sources.
+//
+// Synchronization can have many Directories
+// and Directory can have many Sources.
+model Directory {
+  id Int @id @default(autoincrement())
+
+  sync   Synchronization @relation(fields: [syncID], references: [syncID])
+  syncID String
+
+  name   String
+  Source Source[]
+}
+
+// Source contains feed url, name and image url.
+// It has multiple SourceItems.
+model Source {
+  id Int @id @default(autoincrement())
+
+  directory   Directory @relation(fields: [directoryID], references: [id])
+  directoryID Int
+
+  name       String
+  url        String
+  image      String?
+  SourceItem SourceItem[]
+}
+
+// SourceItem is an item in the feed.
+//
+// Contains title of the item, link to the article,
+// description of the item and optional image url.
+model SourceItem {
+  id Int @id @default(autoincrement())
+
+  source   Source @relation(fields: [sourceID], references: [id])
+  sourceID Int
+
+  title String
+  link String
+  description String
+  image String?
 }
