@@ -4,6 +4,9 @@ import axios from 'axios';
 const endpoints = {
 	source: {
 		info: '/api/source/info'
+	},
+	sync: {
+		get_id: '/api/sync/get_id'
 	}
 }
 

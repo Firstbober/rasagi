@@ -14,39 +14,96 @@ import Toolbar from '@mui/material/Toolbar';
 import Sidebar from '../components/sidebar';
 import Appbar from '../components/appbar';
 import NewsCard from '../components/newscard';
+import { endpoints, fetcher } from '../app/api';
 
 const Home: NextPage = () => {
-  const [isSidebarOpen, setSidebarOpen] = React.useState(true);
+	// Sidebar open state.
+	const [isSidebarOpen, setSidebarOpen] = React.useState(true);
 
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
+	// This state controls if we should render entire app,
+	// which in turns mean to synchronize data with the server.
+	const [canSyncHappen, setCanSyncHappen] = React.useState(false);
 
-      <Head>
-        <title>Rasagi</title>
-        <meta name="description" content="A private RSS aggregator" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+	// Error message for initial loading screen.
+	const [initialErrorMessage, setInitialErrorMessage] = React.useState('');
 
-      <Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
-      <Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(`Not implemented (${node})`)} />
+	// Here we check if local storage has sync-id key,
+	// if so, then we can proceed further,
+	// if not, then let's generate one with request to get_id endpoint.
+	//
+	// This hook will fire only on mount.
+	React.useEffect(() => {
+		// Get sync-id or null.
+		let syncID = localStorage.getItem("sync-id");
 
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Toolbar />
+		// If there is sync-id in local storage
+		// let's render entire app.
+		if (syncID != null) {
+			setCanSyncHappen(true);
+			return;
+		}
 
-        <Box sx={{ maxWidth: 800 }}>
-          <NewsCard
-            url="https://somenews.com"
-            headline="My news headline"
-            description="Something great happend! Check it our right now!"
-            source="SomeNews"
-            image="https://picsum.photos/200"
-            pubDate="2020-01-22"
-          />
-        </Box>
-      </Box>
-    </Box>
-  )
+		// Try to generate and register ID on server.
+		const fn = async () => {
+			try {
+				let res = await fetcher(endpoints.sync.get_id, {});
+
+				if (res.type == "success") {
+					localStorage.setItem("sync-id", res.value);
+					setCanSyncHappen(true);
+				} else {
+					setInitialErrorMessage(res.value);
+				}
+			} catch (error) {
+				setInitialErrorMessage("Synchronization failed. Try again later.");
+			}
+		};
+		fn();
+	}, []);
+
+	// Should we render app or loading screen?
+	if (canSyncHappen) {
+		return (
+			<Box sx={{ display: 'flex' }}>
+				<CssBaseline />
+
+				<Head>
+					<title>Rasagi</title>
+					<meta name="description" content="A private RSS aggregator" />
+					<link rel="icon" href="/favicon.ico" />
+				</Head>
+
+				<Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
+				<Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(`Not implemented (${node})`)} />
+
+				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+					<Toolbar />
+
+					<Box sx={{ maxWidth: 800 }}>
+						<NewsCard
+							url="https://somenews.com"
+							headline="My news headline"
+							description="Something great happend! Check it our right now!"
+							source="SomeNews"
+							image="https://picsum.photos/200"
+							pubDate="2020-01-22"
+						/>
+					</Box>
+				</Box>
+			</Box>
+		)
+	} else {
+		return <Box sx={{
+			display: 'flex',
+			height: '100vh',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flexDirection: 'column'
+		}}>
+			<h1>Rasagi</h1>
+			{initialErrorMessage == '' ? null : <h2>{initialErrorMessage}</h2>}
+		</Box>
+	}
 }
 
 export default Home

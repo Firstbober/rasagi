@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Base synchronization model
+model Synchronization {
+  id Int @id @default(autoincrement())
+  syncID String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
