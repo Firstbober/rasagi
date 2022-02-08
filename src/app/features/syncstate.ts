@@ -1,16 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-
-// Source similar to the one on the server.
-interface Source {
-	name: string,
-	image?: string
-}
-
-// Directory similar to the one on the server.
-interface Directory {
-	name: string,
-	sources: Array<Source>
-}
+import { Directory } from "../types";
 
 interface SyncStateInitial {
 	syncID: string | null,
@@ -29,6 +18,7 @@ export const syncStateSlice = createSlice({
 		},
 
 		updateDirectories: (state, action: PayloadAction<Array<Directory>>) => {
+			localStorage.setItem('sync-directories', JSON.stringify(action.payload));
 			state.directories = action.payload;
 		}
 	}

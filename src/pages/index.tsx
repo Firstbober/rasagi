@@ -14,7 +14,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Sidebar from '../components/sidebar';
 import Appbar from '../components/appbar';
 import NewsCard from '../components/newscard';
-import { endpoints, fetcher } from '../app/api';
+import { endpoints, fetcher, fetcherAuth } from '../app/api';
 import { useAppDispatch, useAppSelector } from '../app/hook';
 import { updateDirectories, updateSyncID } from '../app/features/syncstate';
 
@@ -35,11 +35,20 @@ const Home: NextPage = () => {
 	// Asynchronously updates Redux state
 	// with directories cached on the client, then
 	// fetched from the server.
-	const updateSyncStateDirectories = async () => {
+	const updateSyncStateDirectories = async (syncID: string) => {
 		let syncDirectories = localStorage.getItem("sync-directories");
 
 		if (syncDirectories != null) {
 			dispatch(updateDirectories(JSON.parse(syncDirectories)));
+		}
+
+		try {
+			let res = await fetcherAuth(endpoints.sync.get_directories, {}, syncID!);
+
+			if (res.type == "success") {
+				dispatch(updateDirectories(res.value));
+			}
+		} catch (error) {
 		}
 
 		// TODO: Fetch directories from the server
@@ -57,9 +66,9 @@ const Home: NextPage = () => {
 		// If there is sync-id in local storage
 		// let's render entire app.
 		if (syncID != null) {
-			updateSyncStateDirectories();
-
 			dispatch(updateSyncID(syncID));
+			updateSyncStateDirectories(syncID);
+
 			setCanSyncHappen(true);
 			return;
 		}

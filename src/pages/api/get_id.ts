@@ -1,5 +1,5 @@
 /**
- * api/sync/get_id endpoint
+ * api/get_id endpoint
  *
  * Here we generate and register ID for our client.
  * It will be used later for feed synchronization and new

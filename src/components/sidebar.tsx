@@ -146,7 +146,12 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 
 					{
 						directories.map((directory, _idx) => {
-							return <StyledTreeItem nodeId={`directory-${directory.name}`} labelText={directory.name} labelIcon={Label} />
+							return <StyledTreeItem
+								nodeId={`directory-${directory.name}`}
+								labelText={directory.name}
+								labelIcon={Label}
+								key={`directory-${directory.name}`}
+							/>
 						})
 					}
 				</TreeView>
