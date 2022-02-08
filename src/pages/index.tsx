@@ -15,6 +15,8 @@ import Sidebar from '../components/sidebar';
 import Appbar from '../components/appbar';
 import NewsCard from '../components/newscard';
 import { endpoints, fetcher } from '../app/api';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { updateDirectories, updateSyncID } from '../app/features/syncstate';
 
 const Home: NextPage = () => {
 	// Sidebar open state.
@@ -24,8 +26,24 @@ const Home: NextPage = () => {
 	// which in turns mean to synchronize data with the server.
 	const [canSyncHappen, setCanSyncHappen] = React.useState(false);
 
+	// Redux dispatch.
+	const dispatch = useAppDispatch();
+
 	// Error message for initial loading screen.
 	const [initialErrorMessage, setInitialErrorMessage] = React.useState('');
+
+	// Asynchronously updates Redux state
+	// with directories cached on the client, then
+	// fetched from the server.
+	const updateSyncStateDirectories = async () => {
+		let syncDirectories = localStorage.getItem("sync-directories");
+
+		if (syncDirectories != null) {
+			dispatch(updateDirectories(JSON.parse(syncDirectories)));
+		}
+
+		// TODO: Fetch directories from the server
+	}
 
 	// Here we check if local storage has sync-id key,
 	// if so, then we can proceed further,
@@ -39,6 +57,9 @@ const Home: NextPage = () => {
 		// If there is sync-id in local storage
 		// let's render entire app.
 		if (syncID != null) {
+			updateSyncStateDirectories();
+
+			dispatch(updateSyncID(syncID));
 			setCanSyncHappen(true);
 			return;
 		}
@@ -74,7 +95,10 @@ const Home: NextPage = () => {
 				</Head>
 
 				<Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
-				<Sidebar isOpen={isSidebarOpen} onNodeSelect={(node) => alert(`Not implemented (${node})`)} />
+				<Sidebar
+					isOpen={isSidebarOpen}
+					onNodeSelect={(node) => alert(`Not implemented (${node})`)}
+				/>
 
 				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
 					<Toolbar />

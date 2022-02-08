@@ -54,7 +54,6 @@ const Appbar = ({ setSidebarOpen }: AppbarProps) => {
 
 	const fnAddSource = () => {
 		setAddSourceModalOpen(true);
-		// alert("Not implemented");
 	}
 	const fnManageFolders = () => {
 		alert("Not implemented");

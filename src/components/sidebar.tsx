@@ -18,6 +18,7 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Label from '@mui/icons-material/Label';
 import Newspaper from '@mui/icons-material/Newspaper';
 import Discover from '@mui/icons-material/Explore';
+import { useAppSelector } from '../app/hook';
 
 declare module 'react' {
 	interface CSSProperties {
@@ -109,6 +110,8 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 	const width = 260;
 	const matches = useMediaQuery('(max-width: 800px)');
 
+	const directories = useAppSelector((state) => state.syncState.directories);
+
 	return (
 		<Drawer
 			variant={matches ? "temporary" : "persistent"}
@@ -140,8 +143,12 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 				>
 					<StyledTreeItem nodeId="feed" labelText="Feed" labelIcon={Newspaper} />
 					<StyledTreeItem nodeId="discover" labelText="Discover" labelIcon={Discover} />
-					<StyledTreeItem nodeId="directory-all" labelText="All" labelIcon={Label}>
-					</StyledTreeItem>
+
+					{
+						directories.map((directory, _idx) => {
+							return <StyledTreeItem nodeId={`directory-${directory.name}`} labelText={directory.name} labelIcon={Label} />
+						})
+					}
 				</TreeView>
 			</Box>
 		</Drawer>

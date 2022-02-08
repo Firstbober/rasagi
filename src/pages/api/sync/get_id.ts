@@ -63,7 +63,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	// is unused one and it needs its own entry.
 	await prisma.synchronization.create({
 		data: {
-			syncID: id
+			syncID: id,
+			// Create "All" directory here.
+			directories: {
+				create: [
+					{
+						name: 'All'
+					}
+				]
+			}
 		}
 	});
 
