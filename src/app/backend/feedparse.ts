@@ -21,6 +21,7 @@ export interface FeedMedia {
 export interface FeedMetadata {
 	title: string,
 	link: string,
+	feedUrl: string,
 	description: string,
 	image?: FeedMedia
 }
@@ -35,14 +36,14 @@ interface Feed {
 	content?: FeedContent
 }
 
-interface ParserOptions {
+export interface ParserOptions {
 	// Should we only return metadata about feed
 	// [title, link, description, image].
 	metadataOnly: boolean
 }
 
 // Function for parsing RSS feed.
-function parseRSS(xml: any, options: ParserOptions): FeedContent | boolean {
+function parseRSS(feedUrl: string, xml: any, options: ParserOptions): FeedContent | boolean {
 	// Prepare variable which we can fill out later.
 	let feedContent: FeedContent = { metadata: {} } as any;
 
@@ -54,6 +55,7 @@ function parseRSS(xml: any, options: ParserOptions): FeedContent | boolean {
 	feedContent.metadata.title = xml.channel.title;
 	feedContent.metadata.link = xml.channel.link;
 	feedContent.metadata.description = xml.channel.description;
+	feedContent.metadata.feedUrl = feedUrl;
 
 	// Check if optional <image> tag is included,
 	// and add it to our metdata.
@@ -118,7 +120,7 @@ function parseRSS(xml: any, options: ParserOptions): FeedContent | boolean {
 	return feedContent;
 }
 
-export function feedparse(feed: string, options?: ParserOptions): Feed {
+export function feedparse(feedUrl: string, feed: string, options?: ParserOptions): Feed {
 	// Check if provided XML is a valid one.
 	if (!XMLValidator.validate(feed)) {
 		return {
@@ -140,13 +142,13 @@ export function feedparse(feed: string, options?: ParserOptions): Feed {
 
 	let feedContent: FeedContent;
 	let parseRet = xmlRoot.rss != undefined
-		? parseRSS(xmlRoot.rss, parserOptions)
+		? parseRSS(feedUrl, xmlRoot.rss, parserOptions)
 		// Temporarily parse RSS here, so vscode is silent.
 		//
 		// After some thought, I will not make Atom parser
 		// as right now there is virtually none feeds I could find.
 		// Pull requests are welcomed.
-		: parseRSS(xmlRoot.rss, parserOptions);
+		: parseRSS(feedUrl, xmlRoot.rss, parserOptions);
 
 	// Parsing function can return FeedContent or false,
 	// so we're using this fact for error handling.

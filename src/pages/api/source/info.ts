@@ -10,7 +10,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import axios from 'axios';
 import { parse } from 'node-html-parser';
-import { feedparse, FeedMedia, FeedMetadata } from "../../../app/backend/feedparse";
+import { feedparse, FeedMedia, FeedMetadata, ParserOptions } from "../../../app/backend/feedparse";
 
 // Create interface for typed response construction.
 interface Response {
@@ -18,21 +18,12 @@ interface Response {
 	value: FeedMetadata | string
 }
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function getFeedData(sourceURL: string, feedParseOptions: ParserOptions): Promise<Response | any> {
 	let response: Response = {
 		type: 'error',
 		value: 'Invalid server request'
 	};
 
-	// Check if sourceURL exists.
-	if (req.query.sourceURL == undefined) {
-		res.status(400).json(response);
-		return;
-	}
-
-	// Get sourceURL from query and add https:// if
-	// there isn't already.
-	let sourceURL = req.query.sourceURL as string;
 	sourceURL =
 		!sourceURL.startsWith("https://")
 			? "https://" + sourceURL
@@ -73,6 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 				if (checkContentType(contentType)) {
 					feedData = sourceRes.data;
+					sourceURL = sourceURLObject.protocol + "//" + sourceURLObject.hostname + '/.feed';
 					validContentType = true;
 				}
 			} catch (error) {
@@ -110,8 +102,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			// send response with error to client.
 			if (validLinks.length == 0) {
 				response.value = "This page does not contain any feed!";
-				res.status(200).json(response);
-				return;
+				return response;
 			}
 
 			// Retrive feed data from link.
@@ -125,29 +116,51 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				feedData = sourceRes.data;
 			} catch (error) {
 				response.value = "Cannot get feed from this source.";
-				res.status(200).json(response);
-				return;
+				return response;
 			}
 		}
 
-		const parseResult = feedparse(feedData, {
-			metadataOnly: true
-		});
+		const parseResult = feedparse(sourceURL, feedData, feedParseOptions);
 
-		if(!parseResult.valid) {
+		if (!parseResult.valid) {
 			response.value = "Feed from URL cannot be read.";
-			res.status(200).json(response);
-			return;
+			return response;
 		}
 
-		response.value = parseResult.content?.metadata!;
+		return parseResult;
 	} catch (error) {
 		// Send error response
 		response.value = "Provided URL is invalid!";
-		res.status(200).json(response);
+		return response;
+	}
+}
+
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+	let response: Response = {
+		type: 'error',
+		value: 'Invalid server request'
+	};
+
+	// Check if sourceURL exists.
+	if (req.query.sourceURL == undefined) {
+		res.status(400).json(response);
 		return;
 	}
 
+	// Get sourceURL from query.
+	let sourceURL = req.query.sourceURL as string;
+
+	// Grab feed data from another function.
+	let feedData = await getFeedData(sourceURL, {
+		metadataOnly: true
+	});
+
+	if(feedData.valid == undefined) {
+		res.status(200).json(feedData);
+		return;
+	}
+
+	response.value = (feedData as any).content.metadata;
 	response.type = 'success';
 
 	res.status(200).json(response);

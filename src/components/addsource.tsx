@@ -48,8 +48,9 @@ import Alert, { AlertColor } from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Skeleton from '@mui/material/Skeleton';
 import MenuItem from '@mui/material/MenuItem';
-import { endpoints, fetcher } from '../app/api';
+import { endpoints, fetcher, fetcherAuth } from '../app/api';
 import { FeedMetadata } from '../app/backend/feedparse';
+import { useAppSelector } from '../app/hook';
 
 interface StepArgs {
 	sourceInfo: {
@@ -150,6 +151,25 @@ const steps = [
 	{
 		label: 'Configure source',
 		component: ({ handleBack, handleNext, sourceInfo }: StepArgs) => {
+			const syncID = useAppSelector((state) => state.syncState.syncID);
+			const directories = useAppSelector((state) => state.syncState.directories);
+
+			const [directory, setDirectory] = React.useState(`directory-${directories[0].name}`);
+
+			const inHandleNext = () => {
+				fetcherAuth(endpoints.sync.add_source, {
+					name: sourceInfo.info.title,
+					directory: directory.slice(10),
+					url: sourceInfo.info.feedUrl
+				}, syncID!)
+					.then((response) => {
+						console.log(response);
+					})
+					.catch((error) => {
+						console.log(error);
+					})
+			}
+
 			return (
 				<Box sx={{ paddingTop: 0, width: '100%' }}>
 					<Box sx={{ display: 'flex' }}>
@@ -166,11 +186,24 @@ const steps = [
 						}
 						<Box>
 							<TextField id="source-name" label="Source name" value={sourceInfo.info.title} variant="outlined" sx={{ width: '100%', marginBottom: 1 }} disabled />
-							<TextField id="source-directory" label="Source directory" variant="outlined" sx={{ width: '100%', marginBottom: 1 }} value="directory-all" select>
-								<MenuItem key="directory-all" value="directory-all">
-									All
-								</MenuItem>
-								{ /* TODO: Directory listing */}
+							<TextField
+								id="source-directory"
+								label="Source directory"
+								variant="outlined"
+								sx={{ width: '100%', marginBottom: 1 }}
+								value={directory}
+								select
+								onChange={(event) => {
+									setDirectory(event.target.value);
+								}}
+							>
+								{
+									directories.map((dir, _idx) => {
+										return <MenuItem key={`directory-${dir.name}`} value={`directory-${dir.name}`}>
+											{dir.name}
+										</MenuItem>
+									})
+								}
 							</TextField>
 						</Box>
 					</Box>
@@ -179,7 +212,7 @@ const steps = [
 						<Button onClick={handleBack} variant="text">
 							Back
 						</Button>
-						<Button onClick={handleNext} variant="outlined" >
+						<Button onClick={inHandleNext} variant="outlined" >
 							Finish
 						</Button>
 					</Box>
@@ -241,7 +274,7 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 												setActiveStep(activeStep - 1);
 											},
 											handleNext: () => {
-												alert('Not implemented! (finish)');
+												alert('unimplmented');
 											},
 											sourceInfo: {
 												set: () => { },
