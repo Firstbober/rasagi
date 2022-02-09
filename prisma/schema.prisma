@@ -37,8 +37,7 @@ model Directory {
 model Source {
   id Int @id @default(autoincrement())
 
-  directory   Directory @relation(fields: [directoryID], references: [id])
-  directoryID Int
+  directories Directory[]
 
   name       String
   url        String

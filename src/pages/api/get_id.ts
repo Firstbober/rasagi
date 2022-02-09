@@ -6,6 +6,8 @@
  * source entries.
  */
 
+// TODO: Add removal of Sync after 1 year.
+
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'

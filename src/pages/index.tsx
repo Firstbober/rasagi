@@ -50,8 +50,6 @@ const Home: NextPage = () => {
 			}
 		} catch (error) {
 		}
-
-		// TODO: Fetch directories from the server
 	}
 
 	// Here we check if local storage has sync-id key,
