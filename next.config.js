@@ -3,4 +3,22 @@ const nextConfig = {
   reactStrictMode: true,
 }
 
-module.exports = nextConfig
+const path = require('path');
+
+module.exports = {
+  nextConfig: nextConfig,
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      return {
+        ...config,
+        entry() {
+          return config.entry().then((entry) => ({
+            ...entry,
+            daemon: path.resolve(process.cwd(), 'src/daemon.ts'),
+          }));
+        }
+      };
+    }
+    return config;
+  }
+}
