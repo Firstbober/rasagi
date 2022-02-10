@@ -5,13 +5,11 @@
  * directories but without any sources right now.
  */
 
-// TODO: Maybe return sources here too.
-
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
 import authentication from '../../../app/backend/authentication';
-import { Directory } from '../../../app/types';
+import { Directory, Source } from '../../../app/types';
 
 // Prisma database client.
 const prisma = new PrismaClient();
@@ -48,11 +46,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 	responseObject.value = [];
 
 	// Map everything onto responseObject.
-	for(const dir of directories) {
+	for (const dir of directories) {
+		let sources = await prisma.source.findMany({
+			where: {
+				directory: {
+					id: dir.id
+				}
+			}
+		});
+
+		let sourcesArr = [];
+
+		for (const source of sources) {
+			sourcesArr.push({
+				name: source.name,
+				image: source.image == null ? undefined : source.image
+			} as Source);
+		}
+
 		responseObject.value.push({
 			name: dir.name,
-			sources: []
-		})
+			sources: sourcesArr
+		});
 	}
 
 	// Send response to client.

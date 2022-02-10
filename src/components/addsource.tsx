@@ -50,7 +50,9 @@ import Skeleton from '@mui/material/Skeleton';
 import MenuItem from '@mui/material/MenuItem';
 import { endpoints, fetcher, fetcherAuth } from '../app/api';
 import { FeedMetadata } from '../app/backend/feedparse';
-import { useAppSelector } from '../app/hook';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { Source } from '../app/types';
+import { addSourceToDirectory, updateDirectories } from '../app/features/syncstate';
 
 interface StepArgs {
 	sourceInfo: {
@@ -155,18 +157,29 @@ const steps = [
 			const directories = useAppSelector((state) => state.syncState.directories);
 
 			const [directory, setDirectory] = React.useState(`directory-${directories[0].name}`);
+			const [alertError, setAlertError] = React.useState('');
+
+			const dispatch = useAppDispatch();
 
 			const inHandleNext = () => {
+				let dirName = directory.slice(10);
+
 				fetcherAuth(endpoints.sync.add_source, {
 					name: sourceInfo.info.title,
-					directory: directory.slice(10),
+					directory: dirName,
 					url: sourceInfo.info.feedUrl
 				}, syncID!)
 					.then((response) => {
-						console.log(response);
+						if (response.type == "success") {
+							dispatch(addSourceToDirectory([dirName, response.value as Source]));
+							handleNext();
+						} else {
+							setAlertError(response.value);
+						}
 					})
-					.catch((error) => {
-						console.log(error);
+					.catch((e) => {
+						console.log(e);
+						setAlertError("Error while trying to add source.");
 					})
 			}
 
@@ -207,6 +220,14 @@ const steps = [
 							</TextField>
 						</Box>
 					</Box>
+
+					{
+						alertError != ''
+							? <Alert severity={'error'}>
+								{alertError}
+							</Alert>
+							: null
+					}
 
 					<Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between', marginTop: 4 }}>
 						<Button onClick={handleBack} variant="text">
@@ -274,7 +295,7 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 												setActiveStep(activeStep - 1);
 											},
 											handleNext: () => {
-												alert('unimplmented');
+												onClose();
 											},
 											sourceInfo: {
 												set: () => { },

@@ -28,7 +28,7 @@ model Directory {
   sync   Synchronization @relation(fields: [syncID], references: [syncID])
   syncID String
 
-  name   String
+  name    String
   sources Source[]
 }
 
@@ -37,12 +37,22 @@ model Directory {
 model Source {
   id Int @id @default(autoincrement())
 
-  directories Directory[]
+  directory   Directory @relation(fields: [directoryID], references: [id])
+  directoryID Int
 
-  name       String
-  url        String
-  image      String?
-  items SourceItem[]
+  name  String
+  image String?
+
+  sourceFetcher   SourceFetcher @relation(fields: [sourceFetcherID], references: [id])
+  sourceFetcherID Int
+}
+
+model SourceFetcher {
+  id Int @id @default(autoincrement())
+
+  url    String
+  items  SourceItem[]
+  Source Source[]
 }
 
 // SourceItem is an item in the feed.
@@ -52,11 +62,11 @@ model Source {
 model SourceItem {
   id Int @id @default(autoincrement())
 
-  source   Source @relation(fields: [sourceID], references: [id])
-  sourceID Int
+  sourceFetcher   SourceFetcher @relation(fields: [sourceFetcherID], references: [id])
+  sourceFetcherID Int
 
-  title String
-  link String
-  description String
-  image String?
+  title           String
+  link            String
+  description     String
+  image           String?
 }

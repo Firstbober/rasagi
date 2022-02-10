@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Directory } from "../types";
+import { Directory, Source } from "../types";
 
 interface SyncStateInitial {
 	syncID: string | null,
@@ -20,9 +20,19 @@ export const syncStateSlice = createSlice({
 		updateDirectories: (state, action: PayloadAction<Array<Directory>>) => {
 			localStorage.setItem('sync-directories', JSON.stringify(action.payload));
 			state.directories = action.payload;
+		},
+
+		addSourceToDirectory: (state, action: PayloadAction<[string, Source]>) => {
+			for (const dir of state.directories) {
+				if (dir.name == action.payload[0]) {
+					dir.sources.push(action.payload[1]);
+				}
+			}
+
+			localStorage.setItem('sync-directories', JSON.stringify(state.directories));
 		}
 	}
 })
 
-export const { updateSyncID, updateDirectories } = syncStateSlice.actions
+export const { updateSyncID, updateDirectories, addSourceToDirectory } = syncStateSlice.actions
 export default syncStateSlice.reducer

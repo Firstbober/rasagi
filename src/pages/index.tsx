@@ -2,6 +2,8 @@
  * Main app screen
  */
 
+// TODO: Check if syncID is valid.
+
 import type { NextPage } from 'next'
 
 import Box from '@mui/material/Box';
@@ -30,25 +32,31 @@ const Home: NextPage = () => {
 	const dispatch = useAppDispatch();
 
 	// Error message for initial loading screen.
-	const [initialErrorMessage, setInitialErrorMessage] = React.useState('');
+	const [initialMessage, setInitialMessage] = React.useState('');
 
 	// Asynchronously updates Redux state
 	// with directories cached on the client, then
 	// fetched from the server.
 	const updateSyncStateDirectories = async (syncID: string) => {
+		const au = async () => {
+			try {
+				let res = await fetcherAuth(endpoints.sync.get_directories, {}, syncID!);
+
+				if (res.type == "success") {
+					dispatch(updateDirectories(res.value));
+				}
+			} catch (error) {
+			}
+		};
+
 		let syncDirectories = localStorage.getItem("sync-directories");
 
 		if (syncDirectories != null) {
+			au();
 			dispatch(updateDirectories(JSON.parse(syncDirectories)));
-		}
-
-		try {
-			let res = await fetcherAuth(endpoints.sync.get_directories, {}, syncID!);
-
-			if (res.type == "success") {
-				dispatch(updateDirectories(res.value));
-			}
-		} catch (error) {
+		} else {
+			setInitialMessage("Performing initial synchronization");
+			await au();
 		}
 	}
 
@@ -58,33 +66,41 @@ const Home: NextPage = () => {
 	//
 	// This hook will fire only on mount.
 	React.useEffect(() => {
-		// Get sync-id or null.
-		let syncID = localStorage.getItem("sync-id");
-
-		// If there is sync-id in local storage
-		// let's render entire app.
-		if (syncID != null) {
-			dispatch(updateSyncID(syncID));
-			updateSyncStateDirectories(syncID);
-
-			setCanSyncHappen(true);
-			return;
-		}
-
-		// Try to generate and register ID on server.
 		const fn = async () => {
+			// Get sync-id or null.
+			let syncID = localStorage.getItem("sync-id");
+
+			// If there is sync-id in local storage
+			// let's render entire app.
+			if (syncID != null) {
+				dispatch(updateSyncID(syncID!));
+				await updateSyncStateDirectories(syncID!);
+
+				setCanSyncHappen(true);
+
+				return;
+			}
+
+			// Try to generate and register ID on server.
 			try {
 				let res = await fetcher(endpoints.sync.get_id, {});
 
 				if (res.type == "success") {
 					localStorage.setItem("sync-id", res.value);
+					dispatch(updateSyncID(res.value));
+					await updateSyncStateDirectories(res.value);
+
 					setCanSyncHappen(true);
+
+					return;
 				} else {
-					setInitialErrorMessage(res.value);
+					setInitialMessage(res.value);
 				}
 			} catch (error) {
-				setInitialErrorMessage("Synchronization failed. Try again later.");
+				setInitialMessage("Synchronization failed. Try again later.");
 			}
+
+			return;
 		};
 		fn();
 	}, []);
@@ -110,6 +126,8 @@ const Home: NextPage = () => {
 				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
 					<Toolbar />
 
+					{/* TODO: Synchronize SourceItems  */}
+
 					<Box sx={{ maxWidth: 800 }}>
 						<NewsCard
 							url="https://somenews.com"
@@ -132,7 +150,7 @@ const Home: NextPage = () => {
 			flexDirection: 'column'
 		}}>
 			<h1>Rasagi</h1>
-			{initialErrorMessage == '' ? null : <h2>{initialErrorMessage}</h2>}
+			{initialMessage == '' ? null : <h2>{initialMessage}</h2>}
 		</Box>
 	}
 }

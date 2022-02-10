@@ -153,6 +153,8 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 								key={`directory-${directory.name}`}
 							/>
 						})
+
+						// TODO: Add sources here with removal icon.
 					}
 				</TreeView>
 			</Box>
