@@ -6,7 +6,7 @@
 
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 
-interface FeedItem {
+export interface FeedItem {
 	title: string,
 	link: string,
 	description: string,
@@ -26,12 +26,12 @@ export interface FeedMetadata {
 	image?: FeedMedia
 }
 
-interface FeedContent {
+export interface FeedContent {
 	metadata: FeedMetadata,
 	items: Array<FeedItem>
 }
 
-interface Feed {
+export interface Feed {
 	valid: boolean,
 	content?: FeedContent
 }

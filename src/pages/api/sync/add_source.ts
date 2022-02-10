@@ -4,8 +4,6 @@
  * Here we add Source to the database so it can be fetched and managed.
  */
 
-// TODO: Fetch SourceItems every 15 minutes from Source.
-
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
