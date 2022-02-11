@@ -6,6 +6,7 @@
 
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 
+// TODO: Add pubDate
 export interface FeedItem {
 	title: string,
 	link: string,

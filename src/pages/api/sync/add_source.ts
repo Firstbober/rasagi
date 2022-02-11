@@ -4,9 +4,10 @@
  * Here we add Source to the database so it can be fetched and managed.
  */
 
+// TODO: Adding source should trigger fetching source items.
+
 import type { NextApiRequest, NextApiResponse } from 'next'
 
-import { PrismaClient } from '@prisma/client'
 import authentication, { updateLastActivity } from '../../../app/backend/authentication';
 import { getFeedData } from '../source/info';
 import { FeedMetadata } from '../../../app/backend/feedparse';
@@ -128,15 +129,38 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			},
 			sourceFetcher: {
 				connect: connectWithFetcher ? {
-					id: sourceFetcher[0].id
+					id: sourceFetcher[0].id,
+
 				} : undefined,
 
 				create: connectWithFetcher ? undefined : {
-					url: feedMetadata.feedUrl
+					url: feedMetadata.feedUrl,
+					synchronizations: {
+						connect: {
+							syncID: syncID
+						}
+					}
 				}
 			}
 		}
 	});
+
+	// If fetcher already exists then
+	// connect our user to it.
+	if (connectWithFetcher) {
+		await prisma.sourceFetcher.update({
+			where: {
+				id: sourceFetcher[0].id
+			},
+			data: {
+				synchronizations: {
+					connect: {
+						syncID: syncID
+					}
+				}
+			}
+		})
+	}
 
 	responseObject.type = 'success';
 	responseObject.value = {

@@ -24,7 +24,7 @@ interface NewsCardProps {
 	description: string,
 	source: string,
 	image: string,
-	pubDate: string
+	pubDate: number
 }
 
 const NewsCard = (props: NewsCardProps) => {
@@ -58,14 +58,19 @@ const NewsCard = (props: NewsCardProps) => {
 				target="_blank"
 				rel="noopener"
 			>
-				<CardContent sx={{ display: 'flex', flexDirection: 'column', p: 0, mr: 'auto' }}>
-					<Typography variant="h6">
+				<CardContent sx={{ display: 'flex', flexDirection: 'column', p: 0, mr: 'auto', width: '80%' }}>
+					<Typography variant="h6" noWrap>
 						{props.headline}
 					</Typography>
 					<Typography variant="subtitle2">
 						{props.source} • {dayjs(props.pubDate).fromNow()}
 					</Typography>
-					<Typography variant="caption" sx={{ marginTop: 'auto', marginBottom: 'auto', paddingRight: 4, paddingTop: 1 }}>
+					<Typography variant="caption" sx={{
+						marginTop: 'auto',
+						marginBottom: 'auto',
+						paddingRight: 4,
+						paddingTop: 1
+					}} noWrap>
 						{props.description}
 					</Typography>
 				</CardContent>
@@ -84,9 +89,15 @@ const NewsCard = (props: NewsCardProps) => {
 				<IconButton aria-label="Share link" title="Share link" onClick={fnShareLink}>
 					<Share />
 				</IconButton>
-				<IconButton aria-label="Bookmark article" title="Bookmark article" onClick={fnBookmarkArticle}>
-					<BookmarkBorder />
-				</IconButton>
+				{
+					/*
+					TODO: Add bookmarks
+
+					<IconButton aria-label="Bookmark article" title="Bookmark article" onClick={fnBookmarkArticle}>
+						<BookmarkBorder />
+					</IconButton>
+					*/
+				}
 			</CardActions>
 
 			<Snackbar

@@ -28,12 +28,14 @@ export default async function authentication(req: NextApiRequest, res: NextApiRe
 }
 
 export async function updateLastActivity(syncID: string) {
-	await prisma.synchronization.update({
-		where: {
-			syncID: syncID
-		},
-		data: {
-			lastActiveAt: new Date()
-		}
-	});
+	try {
+		await prisma.synchronization.update({
+			where: {
+				syncID: syncID
+			},
+			data: {
+				lastActiveAt: new Date()
+			}
+		});
+	} catch (error) { }
 }

@@ -12,11 +12,12 @@ model Synchronization {
   id     Int    @id @default(autoincrement())
   syncID String @unique
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
   lastActiveAt DateTime @default(now())
 
-  directories Directory[]
+  directories    Directory[]
+  sourceFetchers SourceFetcher[]
 }
 
 // Directory defines a directory with some sources.
@@ -54,6 +55,8 @@ model SourceFetcher {
   url    String
   items  SourceItem[]
   Source Source[]
+
+  synchronizations Synchronization[]
 }
 
 // SourceItem is an item in the feed.
@@ -66,10 +69,10 @@ model SourceItem {
   sourceFetcher   SourceFetcher @relation(fields: [sourceFetcherID], references: [id])
   sourceFetcherID Int
 
-  title           String
-  link            String @unique
-  description     String
-  image           String?
+  title       String
+  link        String  @unique
+  description String
+  image       String?
 
   createdAt DateTime @default(now())
 }

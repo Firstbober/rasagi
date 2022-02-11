@@ -126,9 +126,7 @@ const Home: NextPage = () => {
 				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
 					<Toolbar />
 
-					{/* TODO: Synchronize SourceItems  */}
 					<News />
-
 				</Box>
 			</Box>
 		)

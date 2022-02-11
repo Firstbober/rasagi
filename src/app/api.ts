@@ -10,7 +10,9 @@ const endpoints = {
 		get_directories: '/api/sync/get_directories',
 
 		add_source: '/api/sync/add_source',
-		del_source: '/api/sync/del_source'
+		del_source: '/api/sync/del_source',
+
+		get_items: '/api/sync/get_items'
 	}
 }
 
