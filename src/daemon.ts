@@ -9,7 +9,13 @@ const prisma = new PrismaClient();
 // Fetch sourceItems.
 async function fetchSourceItems() {
 	// Get all sourceFetchers from database.
-	let sources = await prisma.sourceFetcher.findMany({});
+	let sources = await prisma.sourceFetcher.findMany({
+		where: {
+			Source: {
+				some: {}
+			}
+		}
+	});
 
 	// Iterate over sourceFetchers.
 	for (const source of sources) {
