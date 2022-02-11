@@ -7,7 +7,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
-import authentication from '../../../app/backend/authentication';
+import authentication, { updateLastActivity } from '../../../app/backend/authentication';
 import { getFeedData } from '../source/info';
 import { FeedMetadata } from '../../../app/backend/feedparse';
 import { Source } from '../../../app/types';
@@ -43,6 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		res.status(401).json(responseObject);
 		return;
 	}
+
+	updateLastActivity(syncID);
 
 	// Check if any of variables below is undefined.
 	if (sourceName == undefined || sourceURL == undefined

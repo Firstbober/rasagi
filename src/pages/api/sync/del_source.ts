@@ -7,7 +7,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
-import authentication from '../../../app/backend/authentication';
+import authentication, { updateLastActivity } from '../../../app/backend/authentication';
 
 // Prisma database client.
 const prisma = new PrismaClient();
@@ -35,6 +35,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		res.status(401).json(responseObject);
 		return;
 	}
+
+	updateLastActivity(syncID);
 
 	// Check if sourceName and sourceDirectory is undefined.
 	if (sourceName == undefined && sourceDirectory == undefined) {

@@ -26,3 +26,14 @@ export default async function authentication(req: NextApiRequest, res: NextApiRe
 
 	return null;
 }
+
+export async function updateLastActivity(syncID: string) {
+	await prisma.synchronization.update({
+		where: {
+			syncID: syncID
+		},
+		data: {
+			lastActiveAt: new Date()
+		}
+	});
+}

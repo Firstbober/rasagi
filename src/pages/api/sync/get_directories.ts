@@ -8,7 +8,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
-import authentication from '../../../app/backend/authentication';
+import authentication, { updateLastActivity } from '../../../app/backend/authentication';
 import { Directory, Source } from '../../../app/types';
 
 // Prisma database client.
@@ -33,6 +33,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		res.status(401).json(responseObject);
 		return;
 	}
+
+	updateLastActivity(syncID);
 
 	// Find all directories associated with provided
 	// syncID.
