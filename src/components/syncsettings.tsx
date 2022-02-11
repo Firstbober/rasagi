@@ -11,6 +11,7 @@ import React from 'react';
 // Icons
 import Close from '@mui/icons-material/Close';
 import SwitchAccount from '@mui/icons-material/SwitchAccount';
+import { useAppSelector } from '../app/hook';
 
 interface AddSourceModalProps {
 	isOpen: boolean,
@@ -32,6 +33,8 @@ const TabList = [
 	{
 		label: 'Sync ID',
 		component: () => {
+			const syncID = useAppSelector((state) => state.syncState.syncID);
+
 			const fnSwitchSyncID = () => {
 				alert('Not implemented (fnSwitchSyncID)');
 			}
@@ -57,7 +60,7 @@ const TabList = [
 								border: '1px solid'
 							}}
 						>
-							XZYLQ6-OOPROE-554DET
+							{syncID}
 						</Typography>
 					</Box>
 					<Box sx={{ display: 'flex', alignItems: 'center' }} textAlign={'center'}>
