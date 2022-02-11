@@ -1,4 +1,3 @@
-import ipc from 'node-ipc';
 import { PrismaClient } from '@prisma/client'
 import { getFeedData } from './pages/api/source/info';
 import { Feed, FeedItem } from './app/backend/feedparse';
@@ -54,18 +53,20 @@ async function fetchSourceItems() {
 
 			// Create item function.
 			const createItem = async (item: FeedItem) => {
-				await prisma.sourceItem.create({
-					data: {
-						title: item.title,
-						link: item.link,
-						description: item.description,
-						image: item.media?.mime.startsWith("image") ? item.media.url : undefined,
+				try {
+					await prisma.sourceItem.create({
+						data: {
+							title: item.title,
+							link: item.link,
+							description: item.description,
+							image: item.media?.mime.startsWith("image") ? item.media.url : undefined,
 
-						sourceFetcher: {
-							connect: { id: source.id }
+							sourceFetcher: {
+								connect: { id: source.id }
+							}
 						}
-					}
-				});
+					});
+				} catch (error) { }
 			}
 
 			// Check if there is already some items for
