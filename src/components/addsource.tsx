@@ -296,7 +296,6 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 											},
 											handleNext: () => {
 												setActiveStep(0);
-												setSourceInfo({} as FeedMetadata);
 												onClose();
 											},
 											sourceInfo: {

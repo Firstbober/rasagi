@@ -30,9 +30,26 @@ export const syncStateSlice = createSlice({
 			}
 
 			localStorage.setItem('sync-directories', JSON.stringify(state.directories));
+		},
+
+		removeSourceFromDirectory: (state, action: PayloadAction<[string, string]>) => {
+			for (const dir of state.directories) {
+				if (dir.name == action.payload[0]) {
+					dir.sources = dir.sources.filter((value) => {
+						if (value.name != action.payload[1]) return value;
+					})
+				}
+			}
+
+			localStorage.setItem('sync-directories', JSON.stringify(state.directories));
 		}
 	}
 })
 
-export const { updateSyncID, updateDirectories, addSourceToDirectory } = syncStateSlice.actions
+export const {
+	updateSyncID,
+	updateDirectories,
+	addSourceToDirectory,
+	removeSourceFromDirectory
+} = syncStateSlice.actions
 export default syncStateSlice.reducer

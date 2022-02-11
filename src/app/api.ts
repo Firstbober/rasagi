@@ -9,7 +9,8 @@ const endpoints = {
 		get_id: '/api/get_id',
 		get_directories: '/api/sync/get_directories',
 
-		add_source: '/api/sync/add_source'
+		add_source: '/api/sync/add_source',
+		del_source: '/api/sync/del_source'
 	}
 }
 

@@ -3,6 +3,7 @@
  */
 
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import Drawer from '@mui/material/Drawer';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -13,6 +14,13 @@ import { styled } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
+
+// Dialog
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 import React from 'react'
 
@@ -25,7 +33,9 @@ import Discover from '@mui/icons-material/Explore';
 import SourceIcon from '@mui/icons-material/Source';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { useAppSelector } from '../app/hook';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { endpoints, fetcherAuth } from '../app/api';
+import { removeSourceFromDirectory } from '../app/features/syncstate';
 
 declare module 'react' {
 	interface CSSProperties {
@@ -135,13 +145,32 @@ interface SidebarProps {
 	onNodeSelect: (node: string) => void
 }
 
+interface DialogData {
+	title: string,
+	description: string,
+	buttons: Array<{
+		label: string,
+		action: (closeDialog: () => void) => void
+	}>
+}
+
 const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 	const width = 260;
 	const matches = useMediaQuery('(max-width: 800px)');
 
 	const directories = useAppSelector((state) => state.syncState.directories);
+	const syncID = useAppSelector((state) => state.syncState.syncID);
+
+	const dispatch = useAppDispatch();
 
 	const [selectedNode, setSelectedNode] = React.useState('feed');
+
+	const [isDialogOpen, setDialogOpen] = React.useState(false);
+	const [dialogData, setDialogData] = React.useState({
+		title: "-",
+		description: "-",
+		buttons: []
+	} as DialogData);
 
 	return (
 		<Drawer
@@ -159,6 +188,7 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 			open={matches ? !isOpen : isOpen}
 		>
 			<Toolbar />
+
 			<Box sx={{ overflow: 'auto', height: '100%' }}>
 				<TreeView
 					aria-label="Sidebar"
@@ -195,9 +225,53 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 											labelIcon={SourceIcon}
 											labelImageURL={source.image}
 											key={`directory-source-${source.name}`}
-											trashAction={() => {
-												console.log(`directory-source-${source.name}`)
-												// TODO: Add trash icon functionality
+											trashAction={async () => {
+												const errorDialog = (description: string) => {
+													setDialogData({
+														title: "Source removal failed",
+														description: description,
+														buttons: [
+															{
+																label: 'Continue',
+																action: (cd) => cd()
+															}
+														]
+													});
+													setDialogOpen(true);
+												}
+
+												setDialogData({
+													title: "Are you sure?",
+													description: `Please click "Remove" button to delete "${source.name}" source.`,
+													buttons: [
+														{
+															label: 'Go back',
+															action: (cd) => cd()
+														},
+														{
+															label: 'Remove',
+															action: async (cd) => {
+																try {
+																	let res = await fetcherAuth(endpoints.sync.del_source, {
+																		name: source.name,
+																		directory: directory.name
+																	}, syncID!);
+
+																	if (res.type == "error") {
+																		errorDialog(`Could not remove "${source.name}" due to ${res.value}`);
+																	} else {
+																		dispatch(removeSourceFromDirectory([directory.name, source.name]));
+																	}
+																} catch (error) {
+																	errorDialog(`Could not remove "${source.name}" due to unknown reasons. Try again later.`);
+																}
+
+																cd();
+															}
+														}
+													]
+												});
+												setDialogOpen(true);
 											}}
 										/>
 									})
@@ -205,10 +279,31 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 							</StyledTreeItem>
 						})
 					}
-
-					<img />
 				</TreeView>
 			</Box>
+
+			<Dialog
+				open={isDialogOpen}
+				onClose={() => setDialogOpen(false)}
+				aria-labelledby="alert-dialog-title"
+				aria-describedby="alert-dialog-description"
+			>
+				<DialogTitle id="alert-dialog-title">
+					{dialogData.title}
+				</DialogTitle>
+				<DialogContent>
+					<DialogContentText id="alert-dialog-description">
+						{dialogData.description}
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					{
+						dialogData.buttons.map((button) => {
+							return <Button onClick={() => button.action(() => setDialogOpen(false))}>{button.label}</Button>;
+						})
+					}
+				</DialogActions>
+			</Dialog>
 		</Drawer>
 	)
 }
