@@ -8,9 +8,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
 import authentication, { updateLastActivity } from '../../../app/backend/authentication';
-
-// Prisma database client.
-const prisma = new PrismaClient();
+import prisma from '../../../app/backend/prisma';
 
 interface Response {
 	type: 'success' | 'error',

@@ -10,9 +10,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { PrismaClient } from '@prisma/client'
 import authentication, { updateLastActivity } from '../../../app/backend/authentication';
 import { Directory, Source } from '../../../app/types';
-
-// Prisma database client.
-const prisma = new PrismaClient();
+import prisma from '../../../app/backend/prisma';
 
 // Create interface for typed response construction.
 interface Response {

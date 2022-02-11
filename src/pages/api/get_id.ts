@@ -12,9 +12,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 import { PrismaClient } from '@prisma/client'
 import cryptoRandomString from 'crypto-random-string';
-
-// Prisma database client.
-const prisma = new PrismaClient();
+import prisma from '../../app/backend/prisma';
 
 // Create interface for typed response construction.
 interface Response {

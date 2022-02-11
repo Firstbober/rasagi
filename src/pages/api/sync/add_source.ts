@@ -11,9 +11,7 @@ import authentication, { updateLastActivity } from '../../../app/backend/authent
 import { getFeedData } from '../source/info';
 import { FeedMetadata } from '../../../app/backend/feedparse';
 import { Source } from '../../../app/types';
-
-// Prisma database client.
-const prisma = new PrismaClient();
+import prisma from '../../../app/backend/prisma';
 
 // Create interface for typed response construction.
 interface Response {
