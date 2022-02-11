@@ -43,7 +43,7 @@ async function fetchSourceItems() {
 
 			if (latestItem.length > 0) {
 				latestURL = latestItem[0].link;
-				latestTitle = latestItem[1].title;
+				latestTitle = latestItem[0].title;
 			}
 
 			// Create item function.

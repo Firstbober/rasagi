@@ -127,6 +127,65 @@ export async function getFeedData(sourceURL: string, feedParseOptions: ParserOpt
 			return response;
 		}
 
+		// Check if favicon url is valid and use it for
+		// the feed icon, usually has better looks than one
+		// directly from the feed.
+		let faviconURL = sourceURLObject.protocol + "//" + sourceURLObject.hostname;
+		try {
+			let res = await axios.get(faviconURL);
+			const root = parse(res.data);
+
+			let relIcon = root.querySelectorAll('link[rel="icon"]');
+			let relAppleTouchIcon = root.querySelectorAll('link[rel="apple-touch-icon"]');
+
+			let biggestApple = 0;
+			let biggestAppleHref: string | undefined = '';
+
+			// Try to get biggest possible favicon
+			// using apple tags.
+			for (const appleIcon of relAppleTouchIcon) {
+				let sizes = appleIcon.getAttribute('sizes');
+				if (sizes != undefined) {
+					let s = sizes.toLowerCase().split('x');
+					if (s.length == 2) {
+						if (parseInt(s[0]) > biggestApple) {
+							biggestApple = parseInt(s[0]);
+							biggestAppleHref = appleIcon.getAttribute('href');
+						}
+					}
+				}
+			}
+
+			// Pretty big code duplication
+			// TODO Remove code duplication
+			if (biggestApple == 0 && relIcon.length != 0) {
+				let href = relIcon[0].getAttribute("href");
+				if (href != undefined) {
+					if (href[0] == '/')
+						faviconURL += "/" + href;
+					else {
+						faviconURL = href;
+					}
+				}
+
+				parseResult.content!.metadata.image = {
+					mime: "image/*",
+					url: faviconURL
+				};
+			} else if (biggestAppleHref != undefined && biggestApple != 0) {
+				if (biggestAppleHref[0] == '/')
+					faviconURL += "/" + biggestAppleHref;
+				else {
+					faviconURL = biggestAppleHref;
+				}
+
+				parseResult.content!.metadata.image = {
+					mime: "image/*",
+					url: faviconURL
+				};
+			}
+		} catch (error) { }
+
 		return parseResult;
 	} catch (error) {
 		// Send error response
@@ -155,7 +214,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		metadataOnly: true
 	});
 
-	if(feedData.valid == undefined) {
+	if (feedData.valid == undefined) {
 		res.status(200).json(feedData);
 		return;
 	}

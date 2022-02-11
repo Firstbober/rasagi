@@ -18,7 +18,10 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Label from '@mui/icons-material/Label';
 import Newspaper from '@mui/icons-material/Newspaper';
 import Discover from '@mui/icons-material/Explore';
+import SourceIcon from '@mui/icons-material/Source';
+
 import { useAppSelector } from '../app/hook';
+import Avatar from '@mui/material/Avatar';
 
 declare module 'react' {
 	interface CSSProperties {
@@ -31,6 +34,7 @@ type StyledTreeItemProps = TreeItemProps & {
 	bgColor?: string;
 	color?: string;
 	labelIcon: React.ElementType<SvgIconProps>;
+	labelImageURL?: string;
 	labelInfo?: string;
 	labelText: string;
 }
@@ -65,7 +69,7 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
 		[`& .${treeItemClasses.content}`]: {
 			paddingLeft: theme.spacing(2),
 		},
-	},
+	}
 }))
 
 // Tree view item itself
@@ -73,6 +77,7 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
 	const {
 		bgColor,
 		color,
+		labelImageURL,
 		labelIcon: LabelIcon,
 		labelInfo,
 		labelText,
@@ -83,7 +88,11 @@ const StyledTreeItem = (props: StyledTreeItemProps) => {
 		<StyledTreeItemRoot
 			label={
 				<Box sx={{ display: 'flex', alignItems: 'center', p: 0.5, pr: 0 }}>
-					<Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} />
+					{
+						labelImageURL
+							? <Avatar src={labelImageURL} sx={{ mr: 1, width: 24, height: 24 }} />
+							: <Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} />
+					}
 					<Typography variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
 						{labelText}
 					</Typography>
@@ -128,15 +137,15 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 			open={matches ? !isOpen : isOpen}
 		>
 			<Toolbar />
-			<Box sx={{ overflow: 'auto' }}>
+			<Box sx={{ overflow: 'auto', height: '100%' }}>
 				<TreeView
 					aria-label="Sidebar"
-					defaultExpanded={['directory-all']}
+					defaultExpanded={['directory-All']}
 					defaultSelected={'feed'}
 					defaultCollapseIcon={<ArrowDropDownIcon />}
 					defaultExpandIcon={<ArrowRightIcon />}
 					defaultEndIcon={<div style={{ width: 24 }} />}
-					sx={{ flexGrow: 1, maxWidth: width, overflowY: 'auto', userSelect: 'none' }}
+					sx={{ flexGrow: 1, maxWidth: width, overflowY: 'auto', userSelect: 'none', height: '100%' }}
 					onNodeSelect={(event: React.SyntheticEvent, nodeIds: string) => {
 						if (!nodeIds.startsWith('directory-')) { onNodeSelect(nodeIds) }
 					}}
@@ -151,11 +160,25 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 								labelText={directory.name}
 								labelIcon={Label}
 								key={`directory-${directory.name}`}
-							/>
+							>
+								{
+									directory.sources.map((source, _idx) => {
+										return <StyledTreeItem
+											nodeId={`directory-source-${source.name}`}
+											labelText={source.name}
+											labelIcon={SourceIcon}
+											labelImageURL={source.image}
+											key={`directory-source-${source.name}`}
+										/>
+									})
+								}
+							</StyledTreeItem>
 						})
 
-						// TODO: Add sources here with removal icon.
+						// TODO: Add removal icon.
 					}
+
+					<img />
 				</TreeView>
 			</Box>
 		</Drawer>
