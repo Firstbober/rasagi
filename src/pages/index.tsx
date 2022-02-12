@@ -2,8 +2,6 @@
  * Main app screen
  */
 
-// TODO: Check if syncID is valid.
-
 import type { NextPage } from 'next'
 
 import Box from '@mui/material/Box';
@@ -78,6 +76,22 @@ const Home: NextPage = () => {
 			// If there is sync-id in local storage
 			// let's render entire app.
 			if (syncID != null) {
+				// Check if syncID is still valid.
+				try {
+					await fetcherAuth(endpoints.sync.check_id, {}, syncID);
+				} catch(error: any) {
+					setInitialMessage("Synchronization failed. Trying to recover...");
+					// If unauthorized then remove invalid
+					// syncID.
+					if (error.response.status === 401) {
+						localStorage.removeItem("sync-id");
+					}
+
+					fn();
+
+					return;
+				}
+
 				dispatch(updateSyncID(syncID!));
 				await updateSyncStateDirectories(syncID!);
 
