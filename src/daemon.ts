@@ -1,6 +1,7 @@
 import { PrismaClient } from '@prisma/client'
 import { getFeedData } from './pages/api/source/info';
 import { Feed, FeedItem } from './app/backend/feedparse';
+import dayjs from 'dayjs';
 
 // Prisma database client.
 const prisma = new PrismaClient();
@@ -100,6 +101,58 @@ async function fetchSourceItems() {
 	}
 }
 
+// Remove syncIDs older than 1 year after
+// last activity time.
+async function checkOldSyncIDs() {
+	let syncs = await prisma.synchronization.findMany({
+		select: {
+			id: true,
+			syncID: true,
+			lastActiveAt: true
+		}
+	});
+
+	// Check every sync.
+	for (const sync of syncs) {
+		if (dayjs(sync.lastActiveAt) >= dayjs(sync.lastActiveAt).add(1, 'year')) {
+			// Get all directories of old sync.
+			let dirs = await prisma.directory.findMany({
+				where: {
+					syncID: sync.syncID
+				}
+			});
+
+			// Iterate over directories and remove sources.
+			for (const dir of dirs) {
+				await prisma.source.deleteMany({
+					where: {
+						directoryID: dir.id
+					}
+				});
+			}
+
+			// Remove all sync directories.
+			await prisma.directory.deleteMany({
+				where: {
+					syncID: sync.syncID
+				}
+			});
+
+			// Finally, remove synchronization.
+			await prisma.synchronization.delete({
+				where: {
+					syncID: sync.syncID
+				}
+			});
+		}
+	}
+}
+
 // Run every 15 minutes.
 setInterval(fetchSourceItems, 15 * 60 * 1000);
+
+// Run every 60 minutes.
+setInterval(checkOldSyncIDs, 60 * 60 * 1000);
+
 fetchSourceItems();
+checkOldSyncIDs();
