@@ -108,7 +108,7 @@ const Home: NextPage = () => {
 	// Should we render app or loading screen?
 	if (canSyncHappen) {
 		return (
-			<Box sx={{ display: 'flex' }}>
+			<Box sx={{ display: 'flex', height: '100vh' }}>
 				<CssBaseline />
 
 				<Head>

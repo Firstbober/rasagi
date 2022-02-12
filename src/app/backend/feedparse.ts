@@ -6,12 +6,12 @@
 
 import { XMLParser, XMLValidator } from "fast-xml-parser";
 
-// TODO: Add pubDate
 export interface FeedItem {
 	title: string,
 	link: string,
 	description: string,
-	media?: FeedMedia
+	media?: FeedMedia,
+	pubDate?: Date
 }
 
 export interface FeedMedia {
@@ -105,6 +105,11 @@ function parseRSS(feedUrl: string, xml: any, options: ParserOptions): FeedConten
 				mime: item.enclosure["@_type"],
 				url: item.enclosure["@_url"],
 			};
+		}
+
+		// Add pubDate checking.
+		if(item.pubDate != undefined) {
+			feedItem.pubDate = new Date(item.pubDate);
 		}
 
 		// Again as above, check if fields aren't undefined

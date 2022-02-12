@@ -299,7 +299,7 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 				<DialogActions>
 					{
 						dialogData.buttons.map((button) => {
-							return <Button onClick={() => button.action(() => setDialogOpen(false))}>{button.label}</Button>;
+							return <Button onClick={() => button.action(() => setDialogOpen(false))} key={`dbtn-${button.label}`}>{button.label}</Button>;
 						})
 					}
 				</DialogActions>

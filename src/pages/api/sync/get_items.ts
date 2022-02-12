@@ -69,7 +69,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		}
 	});
 
-	let sourceItems: Array<Item> = []
+	let sourceItems: Array<Item> = [];
 
 	for (const fetcher of fetchers) {
 		// Get items from sourceItems.

@@ -55,11 +55,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
 	// If there is no source, then
 	// send an error.
-	if(source.length == 0) {
+	if (source.length == 0) {
 		responseObject.value = 'Source with this name does not exist.';
 		res.status(200).json(responseObject);
 		return;
 	}
+
+	// Disconnect source fetcher from synchronization.
+	await prisma.synchronization.update({
+		where: {
+			syncID: syncID
+		},
+		data: {
+			sourceFetchers: {
+				disconnect: { id: source[0].sourceFetcherID }
+			}
+		}
+	});
 
 	// Delete source.
 	await prisma.source.delete({

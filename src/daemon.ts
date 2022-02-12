@@ -63,7 +63,8 @@ async function fetchSourceItems() {
 
 							sourceFetcher: {
 								connect: { id: source.id }
-							}
+							},
+							createdAt: item.pubDate
 						}
 					});
 				} catch (error) { }
