@@ -30,7 +30,8 @@ const FeedInfo = (props: FeedInfoProps) => {
 			borderWidth: 1,
 			borderColor: 'lightgray',
 			borderStyle: 'solid',
-			borderRadius: 1
+			borderRadius: 1,
+			minWidth: '100%'
 		}}>
 			<FeedIcon sx={{ fontSize: 96 }} color='disabled' />
 			<Typography variant='h5' color='GrayText' mb={1}>
@@ -50,19 +51,22 @@ const News = () => {
 	// Count amount of pages.
 	const [cnt, setCnt] = React.useState(1);
 
-	// Item count from lastest page.
-	const [itemCount, setItemCount] = React.useState(0);
-
 	// Scroll timeout id state.
 	const [scrollTimeout, setScrollTimeout] = React.useState({} as NodeJS.Timeout);
 
 	// Responsiveness stuff.
 	const matches = useMediaQuery('(min-width: 1200px)');
 
+	React.useEffect(() => {
+		setTimeout(() => {
+			setCnt(1);
+		}, 6000);
+	}, directories);
+
 	// Detect if we reached end of page,
 	// used for infinite scrolling.
 	window.onscroll = function (ev) {
-		if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+		if ((window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight) {
 			clearInterval(scrollTimeout);
 
 			setScrollTimeout(setTimeout(() => {
@@ -71,23 +75,21 @@ const News = () => {
 		}
 	};
 
-	// Get pages.
-	const pages = [];
-	for (let i = 0; i < cnt; i++) {
-		pages.push(<NewsPage page={i} syncID={syncID!} key={`news-page-${i}`} setItemCount={
-			(count) => {
-				setItemCount(count);
-			}
-		} />);
-	}
-
 	let sourceCount = 0;
 	for (const directory of directories) {
 		sourceCount += directory.sources.length;
 	}
 
+	// Get pages.
+	const pages = [];
+	if (sourceCount != 0) {
+		for (let i = 0; i < cnt; i++) {
+			pages.push(<NewsPage page={i} syncID={syncID!} key={`news-page-${i}`} />);
+		}
+	}
+
 	return <Box sx={{
-		maxWidth: matches ? 800 : '100%',
+		width: matches ? 800 : '100%',
 		height: '80%',
 		marginLeft: 'auto',
 		marginRight: 'auto'
@@ -99,27 +101,24 @@ const News = () => {
 					title="No sources added"
 					description='Click on the + icon to add source to the feed or use Discover tab to find sources which may interest you.'
 				/>
-				: itemCount == 0
-					? <FeedInfo
-						title="No feed yet"
-						description='We still are preparing the things for you... Just wait a litte.'
-					/>
-					: <Divider>End of page.</Divider>
+				: <Divider>End of page.</Divider>
 		}
 	</Box>
 }
 
 interface NewsPageProps {
 	page: number,
-	syncID: string,
-	setItemCount: (count: number) => void
+	syncID: string
 }
 
-const NewsPage = ({ page: page, syncID, setItemCount }: NewsPageProps) => {
+const NewsPage = ({ page: page, syncID }: NewsPageProps) => {
 	const { data, error } = useSWR([endpoints.sync.get_items, { page: page }, syncID], fetcherAuth);
 
-	if (error) return <Divider>Failed to load!</Divider>
-	if (!data) return <Divider>Loading...</Divider>
+	if (error) return <Divider>Failed to load!</Divider>;
+	if (!data) return <FeedInfo
+		title="Loading..."
+		description='We still are preparing the things for you... Just wait a litte.'
+	/>;
 
 	if (data.valid == false) {
 		return <h1>Failed to load! {data.value}</h1>;
@@ -133,21 +132,30 @@ const NewsPage = ({ page: page, syncID, setItemCount }: NewsPageProps) => {
 		return 0;
 	});
 
-	if (data.value.length != 0)
-		setItemCount(data.value.length);
+	return <>
+		{
+			data.value.length == 0 && page == 0
+				? <FeedInfo
+					title="Loading..."
+					description='We still are preparing the things for you... Just wait a litte.'
+				/>
+				: undefined
+		}
+		{
+			data.value.map((item: Item) => {
+				return <NewsCard
+					url={item.link}
+					headline={item.title}
+					description={item.description}
+					source={item.source.name}
+					image={item.image ? item.image : "https://picsum.photos/200"}
+					pubDate={item.time}
 
-	return data.value.map((item: Item) => {
-		return <NewsCard
-			url={item.link}
-			headline={item.title}
-			description={item.description}
-			source={item.source.name}
-			image={item.image ? item.image : "https://picsum.photos/200"}
-			pubDate={item.time}
-
-			key={item.time + item.title}
-		/>
-	});
+					key={item.time + item.title}
+				/>
+			})
+		}
+	</>
 }
 
 export default News

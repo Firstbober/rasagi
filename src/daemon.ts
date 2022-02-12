@@ -3,6 +3,11 @@ import { getFeedData } from './pages/api/source/info';
 import { Feed, FeedItem } from './app/backend/feedparse';
 import dayjs from 'dayjs';
 
+import ipc from 'node-ipc'
+
+ipc.config.id = 'rasagiRegularActions';
+ipc.config.retry = 1500;
+
 // Prisma database client.
 const prisma = new PrismaClient();
 
@@ -156,3 +161,14 @@ setInterval(checkOldSyncIDs, 60 * 60 * 1000);
 
 fetchSourceItems();
 checkOldSyncIDs();
+
+// IPC for fetching source on request.
+ipc.serve(() => {
+	ipc.server.on('message', (data, socket) => {
+		if(data == 'fetchSources') {
+			fetchSourceItems();
+		}
+	});
+});
+
+ipc.server.start();

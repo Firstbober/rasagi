@@ -4,8 +4,6 @@
  * Here we add Source to the database so it can be fetched and managed.
  */
 
-// TODO: Adding source should trigger fetching source items.
-
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 import authentication, { updateLastActivity } from '../../../app/backend/authentication';
@@ -13,6 +11,7 @@ import { getFeedData } from '../source/info';
 import { FeedMetadata } from '../../../app/backend/feedparse';
 import { Source } from '../../../app/types';
 import prisma from '../../../app/backend/prisma';
+import { daemonFetchSources } from '../../../app/backend/ipc';
 
 // Create interface for typed response construction.
 interface Response {
@@ -161,6 +160,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			}
 		})
 	}
+
+	// Tell daemon to fetch sources.
+	daemonFetchSources();
 
 	responseObject.type = 'success';
 	responseObject.value = {
