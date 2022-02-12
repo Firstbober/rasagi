@@ -17,6 +17,7 @@ import Share from '@mui/icons-material/Share';
 import BookmarkBorder from '@mui/icons-material/BookmarkBorder';
 import Bookmark from '@mui/icons-material/Bookmark';
 import React from 'react';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface NewsCardProps {
 	url: string,
@@ -29,6 +30,9 @@ interface NewsCardProps {
 
 const NewsCard = (props: NewsCardProps) => {
 	const [isSnackbarOpen, setSnackbarOpen] = React.useState({ isOpen: false, message: "" });
+
+	// Responsiveness stuff.
+	const matches = useMediaQuery('(min-width: 600px)');
 
 	const fnOpenInNewTab = () => {
 		window.open(props.url, '_blank');
@@ -46,7 +50,7 @@ const NewsCard = (props: NewsCardProps) => {
 	}
 
 	return (
-		<Card variant="outlined" sx={{ marginBottom: 2 }}>
+		<Card variant="outlined" sx={{ marginBottom: 2, width: '100%' }}>
 			<Link
 				href={props.url}
 				color="inherit"
@@ -58,7 +62,11 @@ const NewsCard = (props: NewsCardProps) => {
 				target="_blank"
 				rel="noopener"
 			>
-				<CardContent sx={{ display: 'flex', flexDirection: 'column', p: 0, mr: 'auto', width: '80%' }}>
+				<CardContent sx={{
+					display: 'flex',
+					flexDirection: 'column', p: 0, mr: 'auto',
+					width: matches ? '80%' : '100%'
+				}}>
 					<Typography variant="h6" noWrap>
 						{props.headline}
 					</Typography>
@@ -74,12 +82,16 @@ const NewsCard = (props: NewsCardProps) => {
 						{props.description}
 					</Typography>
 				</CardContent>
-				<CardMedia
-					component="img"
-					image={props.image}
-					alt="Article complementary image"
-					sx={{ width: 100, height: 100, borderRadius: 1 }}
-				/>
+				{
+					matches
+						? <CardMedia
+							component="img"
+							image={props.image}
+							alt="Article complementary image"
+							sx={{ width: 100, height: 100, borderRadius: 1 }}
+						/>
+						: undefined
+				}
 			</Link>
 
 			<CardActions disableSpacing>

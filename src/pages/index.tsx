@@ -19,6 +19,7 @@ import News from '../components/news';
 import { endpoints, fetcher, fetcherAuth } from '../app/api';
 import { useAppDispatch, useAppSelector } from '../app/hook';
 import { updateDirectories, updateSyncID } from '../app/features/syncstate';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const Home: NextPage = () => {
 	// Sidebar open state.
@@ -33,6 +34,10 @@ const Home: NextPage = () => {
 
 	// Error message for initial loading screen.
 	const [initialMessage, setInitialMessage] = React.useState('');
+
+	// Responsiveness stuff.
+	const matchesRightPad = useMediaQuery('(min-width: 1420px)');
+	const matchesSidebar = useMediaQuery('(max-width: 800px)');
 
 	// Asynchronously updates Redux state
 	// with directories cached on the client, then
@@ -108,7 +113,7 @@ const Home: NextPage = () => {
 	// Should we render app or loading screen?
 	if (canSyncHappen) {
 		return (
-			<Box sx={{ display: 'flex', height: '100vh' }}>
+			<Box sx={{ display: 'flex', height: '100vh', width: '100%' }}>
 				<CssBaseline />
 
 				<Head>
@@ -118,15 +123,28 @@ const Home: NextPage = () => {
 				</Head>
 
 				<Appbar setSidebarOpen={() => setSidebarOpen(!isSidebarOpen)} />
+
 				<Sidebar
 					isOpen={isSidebarOpen}
 					onNodeSelect={(node) => alert(`Not implemented (${node})`)}
 				/>
 
-				<Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+				<Box component="main" sx={{
+					flexGrow: 1, p: 3,
+					boxSizing: 'border-box',
+					maxWidth: matchesSidebar ? "100%" : 'calc(100vw - 280px)'
+				}}>
 					<Toolbar />
 
-					<News />
+					<Box sx={{
+						display: 'flex',
+						width: '100%'
+					}}>
+						<News />
+						{
+							matchesRightPad ? <Box sx={{ width: '260px' }} /> : undefined
+						}
+					</Box>
 				</Box>
 			</Box>
 		)

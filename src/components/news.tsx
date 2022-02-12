@@ -10,6 +10,7 @@ import React from 'react';
 
 import FeedIcon from '@mui/icons-material/Feed';
 import Typography from '@mui/material/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 interface FeedInfoProps {
 	title: string,
@@ -25,6 +26,7 @@ const FeedInfo = (props: FeedInfoProps) => {
 			justifyContent: 'center',
 			textAlign: 'center',
 			height: '100%',
+			minHeight: 640,
 			borderWidth: 1,
 			borderColor: 'lightgray',
 			borderStyle: 'solid',
@@ -54,6 +56,9 @@ const News = () => {
 	// Scroll timeout id state.
 	const [scrollTimeout, setScrollTimeout] = React.useState({} as NodeJS.Timeout);
 
+	// Responsiveness stuff.
+	const matches = useMediaQuery('(min-width: 1200px)');
+
 	// Detect if we reached end of page,
 	// used for infinite scrolling.
 	window.onscroll = function (ev) {
@@ -81,7 +86,12 @@ const News = () => {
 		sourceCount += directory.sources.length;
 	}
 
-	return <Box sx={{ maxWidth: 800, height: '80%' }}>
+	return <Box sx={{
+		maxWidth: matches ? 800 : '100%',
+		height: '80%',
+		marginLeft: 'auto',
+		marginRight: 'auto'
+	}}>
 		{pages}
 		{
 			sourceCount == 0 ?
@@ -94,7 +104,7 @@ const News = () => {
 						title="No feed yet"
 						description='We still are preparing the things for you... Just wait a litte.'
 					/>
-					: <Divider>Loading/End of page.</Divider>
+					: <Divider>End of page.</Divider>
 		}
 	</Box>
 }
@@ -123,7 +133,7 @@ const NewsPage = ({ page: page, syncID, setItemCount }: NewsPageProps) => {
 		return 0;
 	});
 
-	if(data.value.length != 0)
+	if (data.value.length != 0)
 		setItemCount(data.value.length);
 
 	return data.value.map((item: Item) => {
