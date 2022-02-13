@@ -24,8 +24,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 		return;
 	}
 
-	updateLastActivity(syncID);
-
 	responseObject.type = "success";
 
 	// Send response to client.
