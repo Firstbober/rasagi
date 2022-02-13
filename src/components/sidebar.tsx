@@ -207,7 +207,10 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 					selected={selectedNode}
 				>
 					<StyledTreeItem nodeId="feed" labelText="Feed" labelIcon={Newspaper} />
-					<StyledTreeItem nodeId="discover" labelText="Discover" labelIcon={Discover} />
+					{
+						// Some day, maybe
+						// <StyledTreeItem nodeId="discover" labelText="Discover" labelIcon={Discover} />
+					}
 
 					{
 						directories.map((directory, _idx) => {
