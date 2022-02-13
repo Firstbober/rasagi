@@ -6,6 +6,7 @@ import Tab from '@mui/material/Tab';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import React from 'react';
+import Fade from '@mui/material/Fade';
 
 // Dialog stuff
 import Button from '@mui/material/Button';
@@ -172,43 +173,46 @@ const SyncSettingsModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 		<Modal
 			open={isOpen}
 			onClose={onClose}
+			closeAfterTransition
 		>
-			<Box sx={{ ...style, width: matches ? 360 : 420 }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
-					<Tabs
-						value={tabsValue}
-						onChange={(event, newValue) => {
-							setTabsValue(newValue);
-						}}
-						variant="scrollable"
-						scrollButtons
-						allowScrollButtonsMobile
-						sx={{
-							['.MuiTabs-scrollButtons.Mui-disabled']: {
-								opacity: 0.3
-							},
-							width: '100%'
-						}}
-					>
-						{
-							TabList.map((tab, index) => {
-								return <Tab label={tab.label} id={`sync-settings-tab-${index}`} aria-controls={`sync-settings-tab-${index}`} key={index} />
-							})
-						}
-					</Tabs>
+			<Fade in={isOpen}>
+				<Box sx={{ ...style, width: matches ? 360 : 420 }}>
+					<Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+						<Tabs
+							value={tabsValue}
+							onChange={(event, newValue) => {
+								setTabsValue(newValue);
+							}}
+							variant="scrollable"
+							scrollButtons
+							allowScrollButtonsMobile
+							sx={{
+								['.MuiTabs-scrollButtons.Mui-disabled']: {
+									opacity: 0.3
+								},
+								width: '100%'
+							}}
+						>
+							{
+								TabList.map((tab, index) => {
+									return <Tab label={tab.label} id={`sync-settings-tab-${index}`} aria-controls={`sync-settings-tab-${index}`} key={index} />
+								})
+							}
+						</Tabs>
 
-					<IconButton
-						color="inherit"
-						aria-label="Close modal"
-						onClick={onClose}
-					>
-						<Close />
-					</IconButton>
+						<IconButton
+							color="inherit"
+							aria-label="Close modal"
+							onClick={onClose}
+						>
+							<Close />
+						</IconButton>
+					</Box>
+					{
+						TabList[tabsValue].component()
+					}
 				</Box>
-				{
-					TabList[tabsValue].component()
-				}
-			</Box>
+			</Fade>
 		</Modal>
 	)
 }

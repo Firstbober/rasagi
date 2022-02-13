@@ -67,7 +67,7 @@ const NewsCard = (props: NewsCardProps) => {
 					flexDirection: 'column', p: 0, mr: 'auto',
 					width: matches ? '80%' : '100%'
 				}}>
-					<Typography variant="h6" noWrap>
+					<Typography variant="h6" noWrap title={props.headline}>
 						{props.headline}
 					</Typography>
 					<Typography variant="subtitle2">
@@ -78,7 +78,7 @@ const NewsCard = (props: NewsCardProps) => {
 						marginBottom: 'auto',
 						paddingRight: 4,
 						paddingTop: 1
-					}} noWrap>
+					}} noWrap title={props.description}>
 						{props.description}
 					</Typography>
 				</CardContent>

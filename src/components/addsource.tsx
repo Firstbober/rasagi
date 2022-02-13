@@ -13,6 +13,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
+import Fade from '@mui/material/Fade';
 
 // Step component family
 import Stepper from '@mui/material/Stepper';
@@ -252,64 +253,67 @@ const AddSourceModal = ({ isOpen, onClose }: AddSourceModalProps) => {
 		<Modal
 			open={isOpen}
 			onClose={onClose}
+			closeAfterTransition
 		>
-			<Box sx={{ ...style, width: matches ? 360 : 420 }}>
-				<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-					<Typography variant="h6">Add source</Typography>
-					<IconButton
-						color="inherit"
-						aria-label="Close modal"
-						onClick={onClose}
-					>
-						<Close />
-					</IconButton>
-				</Box>
-				<Divider sx={{ marginTop: 1, marginBottom: 1 }} />
-				<Box >
-					<Stepper activeStep={activeStep} orientation="vertical">
-						{steps.map((step, index) => {
-							if (index != steps.length - 1) {
-								return (
-									<Step key={step.label}>
-										<StepLabel>{step.label}</StepLabel>
-										<StepContent>{step.component({
-											handleBack: () => { },
-											handleNext: () => {
-												setActiveStep(activeStep + 1);
-											},
-											sourceInfo: {
-												set: (info: FeedMetadata) => {
-													setSourceInfo(info);
+			<Fade in={isOpen}>
+				<Box sx={{ ...style, width: matches ? 360 : 420 }}>
+					<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+						<Typography variant="h6">Add source</Typography>
+						<IconButton
+							color="inherit"
+							aria-label="Close modal"
+							onClick={onClose}
+						>
+							<Close />
+						</IconButton>
+					</Box>
+					<Divider sx={{ marginTop: 1, marginBottom: 1 }} />
+					<Box >
+						<Stepper activeStep={activeStep} orientation="vertical">
+							{steps.map((step, index) => {
+								if (index != steps.length - 1) {
+									return (
+										<Step key={step.label}>
+											<StepLabel>{step.label}</StepLabel>
+											<StepContent>{step.component({
+												handleBack: () => { },
+												handleNext: () => {
+													setActiveStep(activeStep + 1);
 												},
-												info: sourceInfo
-											}
-										})}</StepContent>
-									</Step>
-								);
-							} else {
-								return (
-									<Step key={step.label}>
-										<StepLabel>{step.label}</StepLabel>
-										<StepContent>{step.component({
-											handleBack: () => {
-												setActiveStep(activeStep - 1);
-											},
-											handleNext: () => {
-												setActiveStep(0);
-												onClose();
-											},
-											sourceInfo: {
-												set: () => { },
-												info: sourceInfo
-											}
-										})}</StepContent>
-									</Step>
-								);
-							}
-						})}
-					</Stepper>
+												sourceInfo: {
+													set: (info: FeedMetadata) => {
+														setSourceInfo(info);
+													},
+													info: sourceInfo
+												}
+											})}</StepContent>
+										</Step>
+									);
+								} else {
+									return (
+										<Step key={step.label}>
+											<StepLabel>{step.label}</StepLabel>
+											<StepContent>{step.component({
+												handleBack: () => {
+													setActiveStep(activeStep - 1);
+												},
+												handleNext: () => {
+													setActiveStep(0);
+													onClose();
+												},
+												sourceInfo: {
+													set: () => { },
+													info: sourceInfo
+												}
+											})}</StepContent>
+										</Step>
+									);
+								}
+							})}
+						</Stepper>
+					</Box>
 				</Box>
-			</Box>
+			</Fade>
 		</Modal>
 	);
 }

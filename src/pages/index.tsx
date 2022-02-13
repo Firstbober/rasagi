@@ -140,7 +140,7 @@ const Home: NextPage = () => {
 
 				<Sidebar
 					isOpen={isSidebarOpen}
-					onNodeSelect={(node) => alert(`Not implemented (${node})`)}
+					onNodeSelect={(node) => {}}
 				/>
 
 				<Box component="main" sx={{
