@@ -1,6 +1,6 @@
 # Rasagi
-![GitHub](https://img.shields.io/github/license/firstbober/rasagi)
-![Lines of code](https://img.shields.io/tokei/lines/github/firstbober/rasagi)
+![GitHub](https://img.shields.io/github/license/Firstbober/rasagi)
+![Lines of code](https://img.shields.io/tokei/lines/github/Firstbober/rasagi)
 
 Simple server-powered RSS feed reader and aggregator with mobile-ready user interface powered by Material UI and Next.js.
 
