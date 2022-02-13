@@ -192,13 +192,13 @@ const steps = [
 								? <img
 									src={sourceInfo.info.image?.url}
 									alt={sourceInfo.info.title}
-									style={{ marginRight: 1, flexShrink: '0', objectFit: 'contain' }}
+									style={{ flexShrink: '0', objectFit: 'contain' }}
 									width={90} height={90}
 								/>
-								: <Skeleton variant="rectangular" width={90} height={90} sx={{ marginRight: 1, flexShrink: '0' }} />
+								: <Skeleton variant="rectangular" width={90} height={90} sx={{ flexShrink: '0' }} />
 
 						}
-						<Box>
+						<Box sx={{marginLeft: 2}}>
 							<TextField id="source-name" label="Source name" value={sourceInfo.info.title} variant="outlined" sx={{ width: '100%', marginBottom: 1 }} disabled />
 							<TextField
 								id="source-directory"

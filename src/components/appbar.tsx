@@ -19,12 +19,15 @@ import FolderIcon from '@mui/icons-material/Folder';
 
 import AddSourceModal from './addsource';
 import SyncSettingsModal from './syncsettings';
+import { useAppDispatch, useAppSelector } from '../app/hook';
+import { setTheme } from '../app/features/syncstate';
 
 const DarkModeSwitch = () => {
-	const [isDarkMode, setDarkMode] = React.useState(false);
+	const dispatch = useAppDispatch();
+	const currentTheme = useAppSelector((state) => state.syncState.theme);
 
 	const fnToggleThemeMode = () => {
-		setDarkMode(!isDarkMode);
+		dispatch(setTheme(currentTheme == 'dark' ? 'light' : 'dark'));
 	}
 
 	return (
@@ -35,7 +38,8 @@ const DarkModeSwitch = () => {
 			onClick={fnToggleThemeMode}
 		>
 			{
-				isDarkMode ?
+				currentTheme == 'dark'
+					?
 					<LightMode />
 					:
 					<DarkMode />

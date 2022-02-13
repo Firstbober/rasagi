@@ -58,9 +58,9 @@ type StyledTreeItemProps = TreeItemProps & {
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
 	color: theme.palette.text.secondary,
 	[`& .${treeItemClasses.content}`]: {
+		width: 240,
 		color: theme.palette.text.secondary,
-		borderTopRightRadius: theme.spacing(12),
-		borderBottomRightRadius: theme.spacing(12),
+		borderRadius: theme.spacing(1),
 		paddingRight: theme.spacing(1),
 		fontWeight: theme.typography.fontWeightMedium,
 		height: 42,
@@ -81,6 +81,7 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
 			fontWeight: 'inherit',
 			color: 'inherit',
 		},
+		marginBottom: 4
 	},
 	[`& .${treeItemClasses.group}`]: {
 		marginLeft: 0,
@@ -197,7 +198,16 @@ const Sidebar = ({ isOpen, onNodeSelect }: SidebarProps) => {
 					defaultCollapseIcon={<ArrowDropDownIcon />}
 					defaultExpandIcon={<ArrowRightIcon />}
 					defaultEndIcon={<div style={{ width: 24 }} />}
-					sx={{ flexGrow: 1, maxWidth: width, overflowY: 'auto', userSelect: 'none', height: '100%' }}
+					sx={{
+						flexGrow: 1,
+						maxWidth: width,
+						overflowY: 'auto',
+						userSelect: 'none',
+						height: '100%',
+						display: 'flex',
+						flexDirection: 'column',
+						alignItems: 'center'
+					}}
 					onNodeSelect={(event: React.SyntheticEvent, nodeIds: string) => {
 						if (!nodeIds.startsWith('directory-')) {
 							onNodeSelect(nodeIds);

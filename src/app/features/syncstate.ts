@@ -3,14 +3,16 @@ import { Directory, Source } from "../types";
 
 interface SyncStateInitial {
 	syncID: string | null,
-	directories: Array<Directory>
+	directories: Array<Directory>,
+	theme: 'light' | 'dark'
 }
 
 export const syncStateSlice = createSlice({
 	name: 'syncState',
 	initialState: {
 		syncID: null,
-		directories: []
+		directories: [],
+		theme: 'light'
 	} as SyncStateInitial,
 	reducers: {
 		updateSyncID: (state, action: PayloadAction<string>) => {
@@ -42,6 +44,11 @@ export const syncStateSlice = createSlice({
 			}
 
 			localStorage.setItem('sync-directories', JSON.stringify(state.directories));
+		},
+
+		setTheme: (state, action: PayloadAction<'light' | 'dark'>) => {
+			localStorage.setItem('theme', action.payload);
+			state.theme = action.payload;
 		}
 	}
 })
@@ -50,6 +57,7 @@ export const {
 	updateSyncID,
 	updateDirectories,
 	addSourceToDirectory,
-	removeSourceFromDirectory
+	removeSourceFromDirectory,
+	setTheme
 } = syncStateSlice.actions
 export default syncStateSlice.reducer
