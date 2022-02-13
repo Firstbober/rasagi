@@ -8,7 +8,9 @@
     "dev:daemon": "wait-on .next/server/daemon.js && nodemon .next/server/daemon.js -w src/server",
     "dev": "npm-run-all -p dev:daemon dev:app",
     "build": "next build",
-    "start": "next start",
+    "start:app": "next start",
+    "start:daemon": "node .next/server/daemon.js",
+    "start": "npm-run-all -p start:daemon start:app",
     "lint": "next lint"
   },
   "dependencies": {
