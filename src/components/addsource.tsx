@@ -15,6 +15,9 @@ import IconButton from '@mui/material/IconButton';
 import Divider from '@mui/material/Divider';
 import Fade from '@mui/material/Fade';
 
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+
 // Step component family
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -160,9 +163,13 @@ const steps = [
 			const [directory, setDirectory] = React.useState(`directory-${directories[0].name}`);
 			const [alertError, setAlertError] = React.useState('');
 
+			const [isBackdropOpen, setBackdropOpen] = React.useState(false);
+
 			const dispatch = useAppDispatch();
 
 			const inHandleNext = () => {
+				setBackdropOpen(true);
+
 				let dirName = directory.slice(10);
 
 				fetcherAuth(endpoints.sync.add_source, {
@@ -171,6 +178,8 @@ const steps = [
 					url: sourceInfo.info.feedUrl
 				}, syncID!)
 					.then((response) => {
+						setBackdropOpen(false);
+
 						if (response.type == "success") {
 							dispatch(addSourceToDirectory([dirName, response.value as Source]));
 							handleNext();
@@ -180,12 +189,27 @@ const steps = [
 					})
 					.catch((e) => {
 						console.log(e);
+						setBackdropOpen(false);
+
 						setAlertError("Error while trying to add source.");
 					})
 			}
 
 			return (
 				<Box sx={{ paddingTop: 0, width: '100%' }}>
+					<Backdrop
+						sx={{
+							color: '#fff',
+							zIndex: (theme) => theme.zIndex.drawer + 1,
+							flexDirection: 'column',
+							backdropFilter: 'blur(4px)'
+						}}
+						open={isBackdropOpen}
+					>
+						<h3>Preparing things for you... Hold on tight!</h3> <br /> <br />
+						<CircularProgress color="inherit" />
+					</Backdrop>
+
 					<Box sx={{ display: 'flex' }}>
 						{
 							sourceInfo.info.image
@@ -198,7 +222,7 @@ const steps = [
 								: <Skeleton variant="rectangular" width={90} height={90} sx={{ flexShrink: '0' }} />
 
 						}
-						<Box sx={{marginLeft: 2}}>
+						<Box sx={{ marginLeft: 2 }}>
 							<TextField id="source-name" label="Source name" value={sourceInfo.info.title} variant="outlined" sx={{ width: '100%', marginBottom: 1 }} disabled />
 							<TextField
 								id="source-directory"

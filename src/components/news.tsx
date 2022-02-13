@@ -128,7 +128,6 @@ const NewsPage = ({ page: page, syncID }: NewsPageProps) => {
 	data.value.sort((a: Item, b: Item) => {
 		if (a.time > b.time) { return -1; }
 		if (a.time < b.time) { return 1; }
-		console.log(a.time);
 		return 0;
 	});
 
