@@ -21,9 +21,11 @@ Get `node` and `npm` from your repository and you will be good to go.
 ```sh
 git clone https://github.com/Firstbober/rasagi
 cd rasagi
+export DATABASE_URL="file:./database.db"
 npm install
+npx prisma db push
 npm run build
-DATABASE_URL="file:./database.db" npm run start
+npm run start
 ```
 
 These should work, but for the long run you want to put `DATABASE_URL` variable into .env file.
@@ -34,6 +36,8 @@ DATABASE_URL="file:./database.db"
 ```
 
 Changing server port is as easy as adding `PORT=<number>` variable into `.env` or before `npm run start` command.
+
+Also, thanks to Ezioleq and IAlex for helping me to debug this.
 
 ## Feature requests
 These should be placed in [issues tab](https://github.com/Firstbober/rasagi/issues).
