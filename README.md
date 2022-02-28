@@ -16,9 +16,12 @@ Completing these steps will bring you a working instance of Rasagi on most devic
 hosting it on Windows is technically possible but not tested.
 I recommend getting a Raspberry Pi or some old computer to use it as a server.
 
+Get `node` and `npm` from your repository and you will be good to go.
+
 ```sh
 git clone https://github.com/Firstbober/rasagi
 cd rasagi
+npm install
 npm run build
 DATABASE_URL="file:./database.db" npm run start
 ```
